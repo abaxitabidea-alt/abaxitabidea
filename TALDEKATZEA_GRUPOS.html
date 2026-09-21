@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
+	<title></title>
+	<meta name="generator" content="LibreOffice 7.3.0.3 (Windows)"/>
+	<meta name="created" content="2026-09-21T10:29:49.805000000"/>
+	<meta name="changed" content="2026-09-21T10:30:14.925000000"/>
+	<style type="text/css">
+		@page { size: 21cm 29.7cm; margin: 2cm }
+		p { line-height: 115%; margin-bottom: 0.25cm; background: transparent }
+		a:link { color: #000080; so-language: zxx; text-decoration: underline }
+		a:visited { color: #800000; so-language: zxx; text-decoration: underline }
+	</style>
+</head>
+<body lang="es-ES" link="#000080" vlink="#800000" dir="ltr"><p style="line-height: 100%; margin-bottom: 0cm">
+&lt;!DOCTYPE html&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">&lt;html lang=&quot;es&quot;&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">&lt;head&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">    &lt;meta
+charset=&quot;UTF-8&quot;&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">    &lt;meta
+name=&quot;viewport&quot; content=&quot;width=device-width,
+initial-scale=1.0&quot;&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">    &lt;title&gt;Horarios
+y Grupos - Club de Pelota&lt;/title&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">    &lt;style&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">        body {</p>
+<p style="line-height: 100%; margin-bottom: 0cm">           
+font-family: Arial, sans-serif;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">           
+background-color: #f4f6f9;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">            margin:
+0;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">            padding:
+20px;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">            color:
+#333;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">        }</p>
+<p style="line-height: 100%; margin-bottom: 0cm"><br/>
+
+</p>
+<p style="line-height: 100%; margin-bottom: 0cm">        .container {</p>
+<p style="line-height: 100%; margin-bottom: 0cm">           
+max-width: 1100px;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">            margin:
+0 auto;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">           
+background-color: #ffffff;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">            padding:
+25px;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">           
+border-radius: 8px;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">           
+box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);</p>
+<p style="line-height: 100%; margin-bottom: 0cm">        }</p>
+<p style="line-height: 100%; margin-bottom: 0cm"><br/>
+
+</p>
+<p style="line-height: 100%; margin-bottom: 0cm">        h1 {</p>
+<p style="line-height: 100%; margin-bottom: 0cm">           
+text-align: center;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">            color:
+#1b365d;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">           
+margin-bottom: 20px;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">        }</p>
+<p style="line-height: 100%; margin-bottom: 0cm"><br/>
+
+</p>
+<p style="line-height: 100%; margin-bottom: 0cm">       
+.table-responsive {</p>
+<p style="line-height: 100%; margin-bottom: 0cm">           
+overflow-x: auto;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">        }</p>
+<p style="line-height: 100%; margin-bottom: 0cm"><br/>
+
+</p>
+<p style="line-height: 100%; margin-bottom: 0cm">        table {</p>
+<p style="line-height: 100%; margin-bottom: 0cm">            width:
+100%;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">           
+border-collapse: collapse;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">           
+margin-top: 10px;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">        }</p>
+<p style="line-height: 100%; margin-bottom: 0cm"><br/>
+
+</p>
+<p style="line-height: 100%; margin-bottom: 0cm">        th, td {</p>
+<p style="line-height: 100%; margin-bottom: 0cm">            border:
+1px solid #dcdcdc;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">            padding:
+12px;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">           
+text-align: left;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">           
+vertical-align: top;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">        }</p>
+<p style="line-height: 100%; margin-bottom: 0cm"><br/>
+
+</p>
+<p style="line-height: 100%; margin-bottom: 0cm">        th {</p>
+<p style="line-height: 100%; margin-bottom: 0cm">           
+background-color: #1b365d;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">            color:
+#ffffff;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">           
+text-align: center;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">           
+font-size: 16px;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">        }</p>
+<p style="line-height: 100%; margin-bottom: 0cm"><br/>
+
+</p>
+<p style="line-height: 100%; margin-bottom: 0cm">        .hora {</p>
+<p style="line-height: 100%; margin-bottom: 0cm">           
+font-weight: bold;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">           
+background-color: #e9ecef;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">           
+text-align: center;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">           
+vertical-align: middle;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">           
+white-space: nowrap;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">            width:
+120px;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">        }</p>
+<p style="line-height: 100%; margin-bottom: 0cm"><br/>
+
+</p>
+<p style="line-height: 100%; margin-bottom: 0cm">        ul {</p>
+<p style="line-height: 100%; margin-bottom: 0cm">           
+list-style-type: none;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">           
+padding-left: 0;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">            margin:
+0;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">        }</p>
+<p style="line-height: 100%; margin-bottom: 0cm"><br/>
+
+</p>
+<p style="line-height: 100%; margin-bottom: 0cm">        li {</p>
+<p style="line-height: 100%; margin-bottom: 0cm">            padding:
+2px 0;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">           
+border-bottom: 1px dashed #eee;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">        }</p>
+<p style="line-height: 100%; margin-bottom: 0cm"><br/>
+
+</p>
+<p style="line-height: 100%; margin-bottom: 0cm">       
+li:last-child {</p>
+<p style="line-height: 100%; margin-bottom: 0cm">           
+border-bottom: none;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">        }</p>
+<p style="line-height: 100%; margin-bottom: 0cm"><br/>
+
+</p>
+<p style="line-height: 100%; margin-bottom: 0cm">       
+.destacado-fin-semana {</p>
+<p style="line-height: 100%; margin-bottom: 0cm">           
+background-color: #fff3cd;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">            color:
+#856404;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">           
+text-align: center;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">           
+font-weight: bold;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">           
+vertical-align: middle;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">            padding:
+20px 10px;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">        }</p>
+<p style="line-height: 100%; margin-bottom: 0cm">    &lt;/style&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">&lt;/head&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">&lt;body&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm"><br/>
+
+</p>
+<p style="line-height: 100%; margin-bottom: 0cm">&lt;div
+class=&quot;container&quot;&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">    &lt;h1&gt;Horarios
+de Entrenamiento y Partidos&lt;/h1&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">    
+</p>
+<p style="line-height: 100%; margin-bottom: 0cm">    &lt;div
+class=&quot;table-responsive&quot;&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">        &lt;table&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">            &lt;thead&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                &lt;tr&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                   
+&lt;th&gt;Horario&lt;/th&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                   
+&lt;th&gt;Astelehen&lt;br&gt;&lt;small&gt;(Lunes)&lt;/small&gt;&lt;/th&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                   
+&lt;th&gt;Astearte&lt;br&gt;&lt;small&gt;(Martes)&lt;/small&gt;&lt;/th&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                   
+&lt;th&gt;Asteazken&lt;br&gt;&lt;small&gt;(Mi&eacute;rcoles)&lt;/small&gt;&lt;/th&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                   
+&lt;th&gt;Ostegun&lt;br&gt;&lt;small&gt;(Jueves)&lt;/small&gt;&lt;/th&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                   
+&lt;th&gt;Larunbata&lt;br&gt;&lt;small&gt;(S&aacute;bado)&lt;/small&gt;&lt;/th&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">               
+&lt;/tr&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">            &lt;/thead&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">            &lt;tbody&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                &lt;!--
+Turno 17:00 - 18:00 --&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                &lt;tr&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                   
+&lt;td class=&quot;hora&quot;&gt;17:00 &ndash; 18:00&lt;/td&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                   
+&lt;td&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+   &lt;ul&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;U. Koldearena&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;A. Andueza&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;Z. Beunza&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;H. Gila&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;I. Bezunarte&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;B. Bezunarte&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;U. Oteiza&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;I. Zubieta&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;T. Berruezo&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;O. Mendioroz&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;A. Munarriz&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+   &lt;/ul&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                   
+&lt;/td&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                   
+&lt;td&gt;&lt;/td&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                   
+&lt;td&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+   &lt;ul&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;U. Koldearena&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;A. Andueza&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;H. Gila&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;I. Bezunarte&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;B. Bezunarte&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;U. Oteiza&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;I. Zubieta&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;T. Berruezo&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;O. Mendioroz&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;A. Munarriz&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+   &lt;/ul&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                   
+&lt;/td&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                   
+&lt;td&gt;&lt;/td&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                   
+&lt;td rowspan=&quot;3&quot; class=&quot;destacado-fin-semana&quot;&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+   GOIZEAN PILOTA PARTIDAK</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+   &lt;br&gt;&lt;br&gt;/&lt;br&gt;&lt;br&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+   POR LA MA&Ntilde;ANA PARTIDAS DE PELOTA</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                   
+&lt;/td&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">               
+&lt;/tr&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm"><br/>
+
+</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                &lt;!--
+Turno 18:00 - 19:00 --&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                &lt;tr&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                   
+&lt;td class=&quot;hora&quot;&gt;18:00 &ndash; 19:00&lt;/td&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                   
+&lt;td&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+   &lt;ul&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;O. Latasa&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;M. Dallo&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;L. Legarra&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;U. Atondo&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;Y. El Yaakoubi&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;I. Ayanz&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;I. Garc&iacute;a&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;A. Lizoain&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;I. Zozaia&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+   &lt;/ul&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                   
+&lt;/td&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                   
+&lt;td&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+   &lt;ul&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;U. Chavez&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;A. Zudaire&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;E. Astibia&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;P. Aginaga&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;J. Amorena&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;X. Goldarazena&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+   &lt;/ul&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                   
+&lt;/td&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                   
+&lt;td&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+   &lt;ul&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;O. Latasa&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;M. Dallo&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;L. Legarra&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;U. Atondo&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;Y. El Yaakoubi&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;I. Ayanz&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;I. Garc&iacute;a&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;A. Lizoain&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;I. Zozaia&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+   &lt;/ul&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                   
+&lt;/td&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                   
+&lt;td&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+   &lt;ul&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;U. Chavez&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;A. Zudaire&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;E. Astibia&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;P. Aginaga&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;J. Amorena&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;X. Goldarazena&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+   &lt;/ul&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                   
+&lt;/td&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">               
+&lt;/tr&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm"><br/>
+
+</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                &lt;!--
+Turno 19:00 - 20:00 --&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                &lt;tr&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                   
+&lt;td class=&quot;hora&quot;&gt;19:00 &ndash; 20:00&lt;/td&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                   
+&lt;td&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+   &lt;ul&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;U. Fillat&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;O. P&eacute;rez de Obanos&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;M. P&eacute;rez de Obanos&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;O. Atondo&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;A. Hazas&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;I. Iltzarbe&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;A. Ripodas&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;E. San Martin&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+   &lt;/ul&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                   
+&lt;/td&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                   
+&lt;td&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+   &lt;ul&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;H. Astibia&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;M. Casajus&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;D. Centeno&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;J. Petrovic&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;E. Petrovic&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;A. Echeverria&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;E. Narvaez&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+   &lt;/ul&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                   
+&lt;/td&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                   
+&lt;td&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+   &lt;ul&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;U. Fillat&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;O. P&eacute;rez de Obanos&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;M. P&eacute;rez de Obanos&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;O. Atondo&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;A. Hazas&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;I. Iltzarbe&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;A. Ripodas&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;E. San Martin&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+   &lt;/ul&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                   
+&lt;/td&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                   
+&lt;td&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+   &lt;ul&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;H. Astibia&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;M. Casajus&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;D. Centeno&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;J. Petrovic&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;E. Petrovic&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;A. Echeverria&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+       &lt;li&gt;E. Narvaez&lt;/li&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                    
+   &lt;/ul&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">                   
+&lt;/td&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">               
+&lt;/tr&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">            &lt;/tbody&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">        &lt;/table&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">    &lt;/div&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">&lt;/div&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm"><br/>
+
+</p>
+<p style="line-height: 100%; margin-bottom: 0cm">&lt;/body&gt;</p>
+<p style="line-height: 100%; margin-bottom: 0cm">&lt;/html&gt;</p>
+</body>
+</html>
