@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eskola Egutegia - Abaxitabidea</title>
+    <title>Egutegia - Abaxitabidea Pilota Eskola</title>
     <style>
         body { 
             font-family: Arial, sans-serif; 
@@ -11,44 +11,49 @@
             margin: 0; 
             padding: 0; 
             color: #333; 
+            line-height: 1.6;
         }
         header { 
-            background-color: #1b365d; 
+            background-color: #1b5e20; 
             color: white; 
             padding: 20px; 
             text-align: center; 
         }
         .container { 
-            max-width: 1000px; 
+            max-width: 900px; 
             margin: 30px auto; 
             background: white; 
             padding: 30px; 
             border-radius: 8px; 
             box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
+            text-align: center;
         }
         .back-btn { 
             display: inline-block; 
             margin-bottom: 20px; 
-            color: #1b365d; 
+            color: #1b5e20; 
             text-decoration: none; 
             font-weight: bold; 
+            float: left;
         }
         .back-btn:hover { 
             text-decoration: underline; 
         }
+        .clear { clear: both; }
         h1 { margin: 0; font-size: 24px; }
         h2 { 
-            color: #1b365d; 
-            border-bottom: 2px solid #1b365d; 
+            color: #1b5e20; 
+            border-bottom: 2px solid #1b5e20; 
             padding-bottom: 5px; 
+            margin-top: 0;
+            text-align: left;
         }
         .calendar-img {
-            width: 100%;
+            max-width: 100%;
             height: auto;
-            margin-top: 20px;
             border-radius: 6px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-            display: block;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            margin-top: 15px;
         }
     </style>
 </head>
@@ -58,11 +63,12 @@
     </header>
     <div class="container">
         <a href="index.html" class="back-btn">&larr; Hasierara bueltatu</a>
-        <h2>2026-2027 Ikasturteko Eskola Egutegia</h2>
-        <p>Hemen kontsultatu ditzakezu txapelketen faseak, oporrak eta entrenamendu egunak:</p>
+        <div class="clear"></div>
         
-        <!-- MUESTRA LA IMAGEN DEL CALENDARIO -->
-        <img src="Egutegia.PNG" alt="2026-2027 Ikasturteko Eskola Egutegia" class="calendar-img">
+        <h2>Urteko Egutegia</h2>
+        <p style="text-align: left;">Hemen duzue ikusgai denboraldiko egutegi orokorra:</p>
+        
+        <img src="Egutegia.PNG" alt="Abaxitabidea Urteko Egutegia" class="calendar-img">
     </div>
 </body>
 </html>
