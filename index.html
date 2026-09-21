@@ -19,22 +19,24 @@
         header { 
             background-color: #1b5e20; 
             color: white; 
-            padding: 20px 30px; 
+            padding: 15px 30px; 
             display: flex;
             align-items: center;
             justify-content: flex-start;
-            position: relative;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
         }
         .header-logo {
-            height: 70px;
-            width: auto;
+            height: 80px;
+            width: 80px;
+            object-fit: cover;
+            border-radius: 50%;
             margin-right: 20px;
-            filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.2));
+            box-shadow: 0px 4px 8px rgba(0,0,0,0.3);
+            border: 2px solid white;
             transition: transform 0.3s ease;
         }
         .header-logo:hover {
-            transform: scale(1.05);
+            transform: scale(1.08) rotate(3deg);
         }
         .header-title-container {
             display: flex;
@@ -46,7 +48,7 @@
             letter-spacing: 0.5px;
         }
         header p { 
-            margin: 4px 0 0 0; 
+            margin: 3px 0 0 0; 
             opacity: 0.9; 
             font-size: 15px; 
         }
@@ -81,7 +83,7 @@
             animation: slideUp 0.6s ease-out forwards;
         }
 
-        /* Animación escalonada para cada tarjeta */
+        /* Entrada animada escalonada para cada pestaña */
         .card:nth-child(1) { animation-delay: 0.1s; }
         .card:nth-child(2) { animation-delay: 0.2s; }
         .card:nth-child(3) { animation-delay: 0.3s; }
@@ -90,7 +92,7 @@
 
         .card:hover { 
             transform: translateY(-8px); 
-            box-shadow: 0 12px 20px rgba(27, 94, 32, 0.2);
+            box-shadow: 0 12px 22px rgba(27, 94, 32, 0.22);
             border-top-color: #2e7d32;
         }
 
@@ -119,7 +121,7 @@
             margin-top: 50px;
         }
 
-        /* Definición de Keyframes para Animaciones */
+        /* Animaciones */
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
@@ -136,7 +138,7 @@
             }
         }
 
-        /* Adaptación a dispositivos móviles */
+        /* Diseño Móvil Adaptativo */
         @media (max-width: 600px) {
             header {
                 flex-direction: column;
@@ -144,14 +146,15 @@
             }
             .header-logo {
                 margin-right: 0;
-                margin-bottom: 10px;
+                margin-bottom: 12px;
             }
         }
     </style>
 </head>
 <body>
     <header>
-        <img src="logo.png" alt="Abaxitabidea Logo" class="header-logo">
+        <!-- Reemplaza "logo.jpg" por el nombre exacto con el que subas la foto a GitHub -->
+        <img src="logo.jpg" alt="Abaxitabidea Logo" class="header-logo">
         <div class="header-title-container">
             <h1>Abaxitabidea Pilota Eskola</h1>
             <p>Ongi etorri gure webgune ofizialera</p>
