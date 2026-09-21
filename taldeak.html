@@ -5,13 +5,88 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Taldekatzea eta Horarioak - Abaxitabidea</title>
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f6f9; margin: 0; padding: 0; color: #333; }
-        header { background-color: #1b365d; color: white; padding: 20px; text-align: center; }
-        .container { max-width: 800px; margin: 30px auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        .back-btn { display: inline-block; margin-bottom: 20px; color: #1b365d; text-decoration: none; font-weight: bold; }
-        .back-btn:hover { text-decoration: underline; }
+        body { 
+            font-family: Arial, sans-serif; 
+            background-color: #f4f6f9; 
+            margin: 0; 
+            padding: 0; 
+            color: #333; 
+            line-height: 1.5;
+        }
+        header { 
+            background-color: #1b365d; 
+            color: white; 
+            padding: 20px; 
+            text-align: center; 
+        }
+        .container { 
+            max-width: 1000px; 
+            margin: 30px auto; 
+            background: white; 
+            padding: 25px; 
+            border-radius: 8px; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
+        }
+        .back-btn { 
+            display: inline-block; 
+            margin-bottom: 20px; 
+            color: #1b365d; 
+            text-decoration: none; 
+            font-weight: bold; 
+        }
+        .back-btn:hover { 
+            text-decoration: underline; 
+        }
         h1 { margin: 0; font-size: 24px; }
-        h2 { color: #1b365d; border-bottom: 2px solid #1b365d; padding-bottom: 5px; }
+        h2 { 
+            color: #1b365d; 
+            border-bottom: 2px solid #1b365d; 
+            padding-bottom: 5px; 
+            margin-top: 0;
+        }
+        .table-responsive {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        th, td {
+            border: 1px solid #333;
+            padding: 10px;
+            vertical-align: top;
+            text-align: left;
+        }
+        th {
+            background-color: #1b365d;
+            color: white;
+            text-align: center;
+            font-size: 15px;
+        }
+        .time-col {
+            background-color: #eef3f8;
+            font-weight: bold;
+            text-align: center;
+            vertical-align: middle;
+            white-space: nowrap;
+            width: 110px;
+        }
+        .saturday-col {
+            background-color: #f9f9f9;
+            text-align: center;
+            vertical-align: middle;
+            font-weight: bold;
+        }
+        ul.player-list {
+            margin: 0;
+            padding-left: 0;
+            list-style: none;
+        }
+        ul.player-list li {
+            padding: 2px 0;
+        }
     </style>
 </head>
 <body>
@@ -20,8 +95,161 @@
     </header>
     <div class="container">
         <a href="index.html" class="back-btn">&larr; Hasierara bueltatu</a>
+        
         <h2>Taldekatzea eta Horarioak</h2>
-        <p>Hemen kontsultatu ditzakezu talde bakoitzaren entrenamendu ordutegiak.</p>
+        <p>Hemen kontsultatu ditzakezu talde bakoitzaren entrenamendu ordutegiak eta pilotarien banaketa:</p>
+
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Ordutegia</th>
+                        <th>Astelehen</th>
+                        <th>Astearte</th>
+                        <th>Asteazken</th>
+                        <th>Ostegun</th>
+                        <th>Larunbata</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="time-col">17:00 – 18:00</td>
+                        <td>
+                            <ul class="player-list">
+                                <li>U.Koldearena</li>
+                                <li>A.Andueza</li>
+                                <li>Z.Beunza</li>
+                                <li>H.Gila</li>
+                                <li>I.Bezunarte</li>
+                                <li>B.Bezunarte</li>
+                                <li>U.Oteiza</li>
+                                <li>I.Zubieta</li>
+                                <li>T.Berruezo</li>
+                                <li>O.Mendioroz</li>
+                                <li>A.Munarriz</li>
+                            </ul>
+                        </td>
+                        <td></td>
+                        <td>
+                            <ul class="player-list">
+                                <li>U.Koldearena</li>
+                                <li>A.Andueza</li>
+                                <li>H.Gila</li>
+                                <li>I.Bezunarte</li>
+                                <li>B.Bezunarte</li>
+                                <li>U.Oteiza</li>
+                                <li>I.Zubieta</li>
+                                <li>T.Berruezo</li>
+                                <li>O.Mendioroz</li>
+                                <li>A.Munarriz</li>
+                            </ul>
+                        </td>
+                        <td></td>
+                        <td rowspan="3" class="saturday-col">
+                            GOIZEAN<br>PILOTA PARTIDAK<br><br>/<br><br>POR LA MAÑANA<br>PARTIDAS DE PELOTA
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="time-col">18:00 – 19:00</td>
+                        <td>
+                            <ul class="player-list">
+                                <li>O.Latasa</li>
+                                <li>M.Dallo</li>
+                                <li>L.Legarra</li>
+                                <li>U.Atondo</li>
+                                <li>Y.El Yaakoubi</li>
+                                <li>I.Ayanz</li>
+                                <li>I.García</li>
+                                <li>A.Lizoain</li>
+                                <li>I.Zozaia</li>
+                            </ul>
+                        </td>
+                        <td>
+                            <ul class="player-list">
+                                <li>U.Chavez</li>
+                                <li>A.Zudaire</li>
+                                <li>E.Astibia</li>
+                                <li>P.Aginaga</li>
+                                <li>J.Amorena</li>
+                                <li>X.Goldarazena</li>
+                            </ul>
+                        </td>
+                        <td>
+                            <ul class="player-list">
+                                <li>O.Latasa</li>
+                                <li>M.Dallo</li>
+                                <li>L.Legarra</li>
+                                <li>U.Atondo</li>
+                                <li>Y.El Yaakoubi</li>
+                                <li>I.Ayanz</li>
+                                <li>I.García</li>
+                                <li>A.Lizoain</li>
+                                <li>I.Zozaia</li>
+                            </ul>
+                        </td>
+                        <td>
+                            <ul class="player-list">
+                                <li>U.Chavez</li>
+                                <li>A.Zudaire</li>
+                                <li>E.Astibia</li>
+                                <li>P.Aginaga</li>
+                                <li>J.Amorena</li>
+                                <li>X.Goldarazena</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="time-col">19:00 – 20:00</td>
+                        <td>
+                            <ul class="player-list">
+                                <li>U.Fillat</li>
+                                <li>O.Pérez de Obanos</li>
+                                <li>M.Pérez de Obanos</li>
+                                <li>O.Atondo</li>
+                                <li>A.Hazas</li>
+                                <li>I.Iltzarbe</li>
+                                <li>A.Ripodas</li>
+                                <li>E.San Martin</li>
+                            </ul>
+                        </td>
+                        <td>
+                            <ul class="player-list">
+                                <li>H.Astibia</li>
+                                <li>M.Casajus</li>
+                                <li>D.Centeno</li>
+                                <li>J.Petrotx</li>
+                                <li>E.Petrox</li>
+                                <li>A.Echeverria</li>
+                                <li>E.Narvaez</li>
+                            </ul>
+                        </td>
+                        <td>
+                            <ul class="player-list">
+                                <li>U.Fillat</li>
+                                <li>O.Pérez de Obanos</li>
+                                <li>M.Pérez de Obanos</li>
+                                <li>O.Atondo</li>
+                                <li>A.Hazas</li>
+                                <li>I.Iltzarbe</li>
+                                <li>A.Ripodas</li>
+                                <li>E.San Martin</li>
+                            </ul>
+                        </td>
+                        <td>
+                            <ul class="player-list">
+                                <li>H.Astibia</li>
+                                <li>M.Casajus</li>
+                                <li>D.Centeno</li>
+                                <li>J.Petrotx</li>
+                                <li>E.Petrox</li>
+                                <li>A.Echeverria</li>
+                                <li>E.Narvaez</li>
+                            </ul>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </body>
 </html>
