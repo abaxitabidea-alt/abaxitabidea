@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="eu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kontaktua - Abaxitabidea Pilota Eskola</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            background-color: #f4f6f9; 
+            margin: 0; 
+            padding: 0; 
+            color: #333; 
+            line-height: 1.6;
+        }
+        header { 
+            background-color: #1b5e20; 
+            color: white; 
+            padding: 20px; 
+            text-align: center; 
+        }
+        .container { 
+            max-width: 800px; 
+            margin: 30px auto; 
+            background: white; 
+            padding: 30px; 
+            border-radius: 8px; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
+        }
+        .back-btn { 
+            display: inline-block; 
+            margin-bottom: 20px; 
+            color: #1b5e20; 
+            text-decoration: none; 
+            font-weight: bold; 
+        }
+        .back-btn:hover { 
+            text-decoration: underline; 
+        }
+        h1 { margin: 0; font-size: 24px; }
+        h2 { 
+            color: #1b5e20; 
+            border-bottom: 2px solid #1b5e20; 
+            padding-bottom: 5px; 
+            margin-top: 0;
+        }
+        .contact-box {
+            background-color: #e8f5e9;
+            border-left: 4px solid #1b5e20;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 0 6px 6px 0;
+        }
+        .contact-item {
+            margin-bottom: 15px;
+        }
+        .contact-item strong {
+            color: #1b5e20;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Abaxitabidea Pilota Eskola</h1>
+    </header>
+    <div class="container">
+        <a href="index.html" class="back-btn">&larr; Hasierara bueltatu / Pagina principal</a>
+        
+        <h2>Kontaktua / Contacto</h2>
+        
+        <p>Edozein zalantza, kontsulta edo ohar izanez gero, gurekin harremanetan jar zaitezke bide hauen bidez:</p>
+
+        <div class="contact-box">
+            <div class="contact-item">
+                <strong>Posta elektronikoa / Email:</strong><br>
+                info@abaxitabidea.com
+            </div>
+            <div class="contact-item">
+                <strong>Kokapena / Frontón:</strong><br>
+                Udal Pilotalekua / Frontón Municipal
+            </div>
+        </div>
+
+        <p><i>Si tienes cualquier duda o consulta, puedes ponerte en contacto con la escuela a través de los medios indicados arriba.</i></p>
+    </div>
+</body>
+</html>
