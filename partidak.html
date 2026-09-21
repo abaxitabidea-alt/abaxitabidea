@@ -20,7 +20,7 @@
             text-align: center; 
         }
         .container { 
-            max-width: 900px; 
+            max-width: 800px; 
             margin: 30px auto; 
             background: white; 
             padding: 30px; 
@@ -51,41 +51,44 @@
             margin-bottom: 25px;
             border-radius: 0 6px 6px 0;
         }
-        .section-title {
-            color: #1b365d;
-            font-size: 18px;
-            margin-top: 25px;
-            margin-bottom: 10px;
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 5px;
-        }
-        .pairs-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
-        }
-        .category-card {
-            background-color: #ffffff;
+        .category-section {
+            margin-bottom: 30px;
+            background: #ffffff;
             border: 1px solid #dcdcdc;
-            border-top: 4px solid #1b365d;
             border-radius: 6px;
-            padding: 15px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
-        .category-card h4 {
-            margin: 0 0 10px 0;
-            color: #1b365d;
-            font-size: 16px;
+        .category-header {
+            background-color: #1b365d;
+            color: white;
+            padding: 10px 15px;
+            font-size: 17px;
+            font-weight: bold;
+        }
+        .table-responsive {
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            text-align: left;
+        }
+        th, td {
+            padding: 12px 10px;
             border-bottom: 1px solid #eee;
-            padding-bottom: 5px;
         }
-        .category-card ul {
-            margin: 0;
-            padding-left: 18px;
+        th {
+            background-color: #f1f4f8;
+            color: #1b365d;
+            font-size: 13px;
+            text-transform: uppercase;
         }
-        .category-card li {
-            margin-bottom: 5px;
+        .vs-cell {
+            color: #888;
+            font-style: italic;
+            background-color: #fafafa;
         }
         ul.rules-list {
             padding-left: 20px;
@@ -103,81 +106,239 @@
     <div class="container">
         <a href="index.html" class="back-btn">&larr; Hasierara bueltatu</a>
         
-        <h2>Partidak (NKJ / JDN) - Bikoteak</h2>
+        <h2>Partidak (NKJ / JDN) - Karteldegia</h2>
         
         <div class="info-card">
-            <p style="margin: 0;">Hemen duzue denboraldiko bikoteen banaketa kategoriaren arabera, baita partidei buruzko arau nagusiak ere.</p>
+            <p style="margin: 0;">Hemen kontsultatu ditzakezu asteburuko partiden lehiaketak, tokia eta ordutegia:</p>
         </div>
 
-        <h3 class="section-title">Denboraldiko Bikoteak / Parejas</h3>
-        
-        <div class="pairs-grid">
-            <div class="category-card">
-                <h4>Benjamin 3º</h4>
-                <ul>
-                    <li>U.Oteiza – I.Zubieta</li>
-                    <li>O.Mendioroz – T.Berruezo</li>
-                </ul>
-            </div>
-
-            <div class="category-card">
-                <h4>Benjamin 2º</h4>
-                <ul>
-                    <li>M.Dallo – M.Amorena</li>
-                </ul>
-            </div>
-
-            <div class="category-card">
-                <h4>Alevin 3º</h4>
-                <ul>
-                    <li>O.Pérez de Obanos – M.Pérez de Obanos</li>
-                </ul>
-            </div>
-
-            <div class="category-card">
-                <h4>Alevines 1º</h4>
-                <ul>
-                    <li>H.Astibia – A.Echeverria</li>
-                    <li>E.Petrox – E.Narvaez</li>
-                </ul>
-            </div>
-
-            <div class="category-card">
-                <h4>Infantil 4º</h4>
-                <ul>
-                    <li>A.Ripodas – E.San Martin</li>
-                </ul>
-            </div>
-
-            <div class="category-card">
-                <h4>Infantil 3º</h4>
-                <ul>
-                    <li>O.Atondo – A.Hazas</li>
-                    <li>I.Iltzarbe – U.Fillat</li>
-                </ul>
-            </div>
-
-            <div class="category-card">
-                <h4>Infantil 2º</h4>
-                <ul>
-                    <li>E.Astibia – I.Petrox</li>
-                    <li>J.Amorena – M.Casajus</li>
-                </ul>
-            </div>
-
-            <div class="category-card">
-                <h4>Infantil 1º</h4>
-                <ul>
-                    <li>P.Aginaga – X.Goldaracena</li>
-                </ul>
+        <!-- BENJAMIN 3º -->
+        <div class="category-section">
+            <div class="category-header">Benjamin 3º</div>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Bikotea (Gurea)</th>
+                            <th>Aurkaria / Rival</th>
+                            <th>Tokia / Frontón</th>
+                            <th>Ordutegia / Hora</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>U.Oteiza – I.Zubieta</strong></td>
+                            <td class="vs-cell">-- Ahuldua / Zehazteke --</td>
+                            <td>--</td>
+                            <td>--</td>
+                        </tr>
+                        <tr>
+                            <td><strong>O.Mendioroz – T.Berruezo</strong></td>
+                            <td class="vs-cell">-- Ahuldua / Zehazteke --</td>
+                            <td>--</td>
+                            <td>--</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 
-        <h3 class="section-title">Araudia eta Antolaketa</h3>
+        <!-- BENJAMIN 2º -->
+        <div class="category-section">
+            <div class="category-header">Benjamin 2º</div>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Bikotea (Gurea)</th>
+                            <th>Aurkaria / Rival</th>
+                            <th>Tokia / Frontón</th>
+                            <th>Ordutegia / Hora</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>M.Dallo – M.Amorena</strong></td>
+                            <td class="vs-cell">-- Ahuldua / Zehazteke --</td>
+                            <td>--</td>
+                            <td>--</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ALEVIN 3º -->
+        <div class="category-section">
+            <div class="category-header">Alevin 3º</div>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Bikotea (Gurea)</th>
+                            <th>Aurkaria / Rival</th>
+                            <th>Tokia / Frontón</th>
+                            <th>Ordutegia / Hora</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>O.Pérez de Obanos – M.Pérez de Obanos</strong></td>
+                            <td class="vs-cell">-- Ahuldua / Zehazteke --</td>
+                            <td>--</td>
+                            <td>--</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ALEVINES 1º -->
+        <div class="category-section">
+            <div class="category-header">Alevines 1º</div>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Bikotea (Gurea)</th>
+                            <th>Aurkaria / Rival</th>
+                            <th>Tokia / Frontón</th>
+                            <th>Ordutegia / Hora</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>H.Astibia – A.Echeverria</strong></td>
+                            <td class="vs-cell">-- Ahuldua / Zehazteke --</td>
+                            <td>--</td>
+                            <td>--</td>
+                        </tr>
+                        <tr>
+                            <td><strong>E.Petrox – E.Narvaez</strong></td>
+                            <td class="vs-cell">-- Ahuldua / Zehazteke --</td>
+                            <td>--</td>
+                            <td>--</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- INFANTIL 4º -->
+        <div class="category-section">
+            <div class="category-header">Infantil 4º</div>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Bikotea (Gurea)</th>
+                            <th>Aurkaria / Rival</th>
+                            <th>Tokia / Frontón</th>
+                            <th>Ordutegia / Hora</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>A.Ripodas – E.San Martin</strong></td>
+                            <td class="vs-cell">-- Ahuldua / Zehazteke --</td>
+                            <td>--</td>
+                            <td>--</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- INFANTIL 3º -->
+        <div class="category-section">
+            <div class="category-header">Infantil 3º</div>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Bikotea (Gurea)</th>
+                            <th>Aurkaria / Rival</th>
+                            <th>Tokia / Frontón</th>
+                            <th>Ordutegia / Hora</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>O.Atondo – A.Hazas</strong></td>
+                            <td class="vs-cell">-- Ahuldua / Zehazteke --</td>
+                            <td>--</td>
+                            <td>--</td>
+                        </tr>
+                        <tr>
+                            <td><strong>I.Iltzarbe – U.Fillat</strong></td>
+                            <td class="vs-cell">-- Ahuldua / Zehazteke --</td>
+                            <td>--</td>
+                            <td>--</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- INFANTIL 2º -->
+        <div class="category-section">
+            <div class="category-header">Infantil 2º</div>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Bikotea (Gurea)</th>
+                            <th>Aurkaria / Rival</th>
+                            <th>Tokia / Frontón</th>
+                            <th>Ordutegia / Hora</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>E.Astibia – I.Petrox</strong></td>
+                            <td class="vs-cell">-- Ahuldua / Zehazteke --</td>
+                            <td>--</td>
+                            <td>--</td>
+                        </tr>
+                        <tr>
+                            <td><strong>J.Amorena – M.Casajus</strong></td>
+                            <td class="vs-cell">-- Ahuldua / Zehazteke --</td>
+                            <td>--</td>
+                            <td>--</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- INFANTIL 1º -->
+        <div class="category-section">
+            <div class="category-header">Infantil 1º</div>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Bikotea (Gurea)</th>
+                            <th>Aurkaria / Rival</th>
+                            <th>Tokia / Frontón</th>
+                            <th>Ordutegia / Hora</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>P.Aginaga – X.Goldaracena</strong></td>
+                            <td class="vs-cell">-- Ahuldua / Zehazteke --</td>
+                            <td>--</td>
+                            <td>--</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <h3 style="color:#1b365d; border-bottom: 2px solid #1b365d; padding-bottom: 5px;">Araudia eta Antolaketa</h3>
         <ul class="rules-list">
             <li><strong>Bikoteen eraketa:</strong> Bikote guztiak monitoreek osatu dituzte kirol eta pedagogia irizpideak jarraituz.</li>
-            <li><strong>Hirukoteak:</strong> Hirukoteak osatzen diren kasuetan, partiden hurrenkera txapelketaren aurretik zozketatuko da.</li>
-            <li><strong>Familien adostasuna:</strong> Familiaren bat esleitutako bikotearekin ados ez badago, pilotariak ez du txapelketetan parte hartuko hurrengo denboraldira arte.</li>
             <li><strong>Jardunaldien ordutegia:</strong> Partidak larunbat goizetan jokatuko dira.</li>
             <li><strong>Ordutegi aldaketak:</strong> Partiden ordena astelehenean 20:00ak baino lehen eta ahal den neurrian abisatuz bakarrik aldatuko da.</li>
             <li><strong>Ekipamendua:</strong> Partidetara txuriz joan behar da, taldeak emandako kamiseta eta txaketearekin, gerriko gorria/urdina, pilota berotzeko materiala eta federazioko txartela eramanda.</li>
