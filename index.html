@@ -5,119 +5,93 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Abaxitabidea Pilota Eskola</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f6f9;
-            margin: 0;
-            padding: 0;
+        body { 
+            font-family: Arial, sans-serif; 
+            background-color: #f4f6f9; 
+            margin: 0; 
+            padding: 0; 
+            color: #333; 
+            line-height: 1.6;
+        }
+        header { 
+            background-color: #1b5e20; 
+            color: white; 
+            padding: 30px 20px; 
+            text-align: center; 
+        }
+        header h1 { margin: 0; font-size: 28px; }
+        header p { margin-top: 5px; opacity: 0.9; font-size: 16px; }
+        .container { 
+            max-width: 900px; 
+            margin: 40px auto; 
+            padding: 0 20px; 
+        }
+        .grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
+            gap: 20px; 
+        }
+        .card { 
+            background: white; 
+            border-radius: 8px; 
+            padding: 25px 20px; 
+            text-align: center; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.08); 
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-decoration: none;
             color: #333;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
+            border-top: 5px solid #1b5e20;
         }
-
-        .hero {
-            background-color: #ffffff;
-            text-align: center;
-            padding: 40px 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        .card:hover { 
+            transform: translateY(-5px); 
+            box-shadow: 0 8px 15px rgba(0,0,0,0.12);
         }
-
-        .logo {
-            max-width: 220px;
-            height: auto;
-            margin-bottom: 20px;
-        }
-
-        h1 {
-            color: #1b365d;
-            font-size: 36px;
-            margin: 10px 0;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        p.slogan {
-            color: #555;
+        .card h3 { 
+            margin-top: 0; 
+            color: #1b5e20; 
             font-size: 20px;
-            font-style: italic;
-            margin-top: 5px;
+        }
+        .card p { 
+            font-size: 14px; 
+            color: #666; 
             margin-bottom: 0;
         }
-
-        .container {
-            max-width: 900px;
-            margin: 40px auto;
-            padding: 0 20px;
-            flex: 1;
-        }
-
-        .nav-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-        }
-
-        .nav-card {
-            background-color: #1b365d;
-            color: #ffffff;
-            text-decoration: none;
-            padding: 25px 20px;
-            border-radius: 8px;
-            text-align: center;
-            font-weight: bold;
-            font-size: 18px;
-            transition: transform 0.2s ease, background-color 0.2s ease;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 80px;
-        }
-
-        .nav-card:hover {
-            background-color: #2a5288;
-            transform: translateY(-4px);
-        }
-
         footer {
             text-align: center;
             padding: 20px;
-            background-color: #1b365d;
-            color: #ffffff;
+            color: #777;
             font-size: 14px;
-            margin-top: auto;
+            margin-top: 40px;
         }
     </style>
 </head>
 <body>
-
-    <header class="hero">
-        <img src="LOGO OFIZIALA.jpg" alt="Abaxitabidea Pilota Eskola Logoa" class="logo">
+    <header>
         <h1>Abaxitabidea Pilota Eskola</h1>
-        <p class="slogan">Jolastu eta gozatu pilotaz</p>
+        <p>Ongi etorri gure webgune ofizialera</p>
     </header>
-
-    <main class="container">
-        <nav class="nav-grid">
-            <a href="taldeak.html" class="nav-card">
-                Taldekatzea
+    <div class="container">
+        <div class="grid">
+            <a href="taldeak.html" class="card">
+                <h3>Taldeak & Horarioak</h3>
+                <p>Kontsultatu taldekatzeak eta entrenamenduen ordutegiak.</p>
             </a>
-            <a href="araudia.html" class="nav-card">
-                Araudia
+            <a href="araudia.html" class="card">
+                <h3>Araudia</h3>
+                <p>Eskolako barne arauak eta funtzionamendua.</p>
             </a>
-            <a href="egutegia.html" class="nav-card">
-                Egutegia
+            <a href="egutegia.html" class="card">
+                <h3>Egutegia</h3>
+                <p>Denboraldiko egutegi orokorra ikusgai.</p>
             </a>
-            <a href="partidak.html" class="nav-card">
-                Partidak (NKJ / JDN)
+            <a href="partidak.html" class="card">
+                <h3>Partidak (NKJ)</h3>
+                <p>Asteburuko partidak, bikoteak, tokiak eta ordutegiak.</p>
             </a>
-        </nav>
-    </main>
-
+        </div>
+    </div>
     <footer>
         &copy; Abaxitabidea Pilota Eskola
     </footer>
-
 </body>
 </html>
