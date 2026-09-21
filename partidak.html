@@ -3,15 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Partidak NKJ/JDN - Abaxitabidea</title>
+    <title>Partidak (NKJ / JDN) - Abaxitabidea</title>
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f6f9; margin: 0; padding: 0; color: #333; }
-        header { background-color: #1b365d; color: white; padding: 20px; text-align: center; }
-        .container { max-width: 800px; margin: 30px auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        .back-btn { display: inline-block; margin-bottom: 20px; color: #1b365d; text-decoration: none; font-weight: bold; }
-        .back-btn:hover { text-decoration: underline; }
+        body { 
+            font-family: Arial, sans-serif; 
+            background-color: #f4f6f9; 
+            margin: 0; 
+            padding: 0; 
+            color: #333; 
+            line-height: 1.6;
+        }
+        header { 
+            background-color: #1b365d; 
+            color: white; 
+            padding: 20px; 
+            text-align: center; 
+        }
+        .container { 
+            max-width: 900px; 
+            margin: 30px auto; 
+            background: white; 
+            padding: 30px; 
+            border-radius: 8px; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
+        }
+        .back-btn { 
+            display: inline-block; 
+            margin-bottom: 20px; 
+            color: #1b365d; 
+            text-decoration: none; 
+            font-weight: bold; 
+        }
+        .back-btn:hover { 
+            text-decoration: underline; 
+        }
         h1 { margin: 0; font-size: 24px; }
-        h2 { color: #1b365d; border-bottom: 2px solid #1b365d; padding-bottom: 5px; }
+        h2 { 
+            color: #1b365d; 
+            border-bottom: 2px solid #1b365d; 
+            padding-bottom: 5px; 
+            margin-top: 0;
+        }
+        .info-card {
+            background-color: #eef3f8;
+            border-left: 4px solid #1b365d;
+            padding: 15px 20px;
+            margin-bottom: 25px;
+            border-radius: 0 6px 6px 0;
+        }
+        .section-title {
+            color: #1b365d;
+            font-size: 18px;
+            margin-top: 25px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+        }
+        .pairs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .category-card {
+            background-color: #ffffff;
+            border: 1px solid #dcdcdc;
+            border-top: 4px solid #1b365d;
+            border-radius: 6px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .category-card h4 {
+            margin: 0 0 10px 0;
+            color: #1b365d;
+            font-size: 16px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+        .category-card ul {
+            margin: 0;
+            padding-left: 18px;
+        }
+        .category-card li {
+            margin-bottom: 5px;
+        }
+        ul.rules-list {
+            padding-left: 20px;
+            margin-bottom: 20px;
+        }
+        ul.rules-list li {
+            margin-bottom: 8px;
+        }
     </style>
 </head>
 <body>
@@ -20,8 +102,87 @@
     </header>
     <div class="container">
         <a href="index.html" class="back-btn">&larr; Hasierara bueltatu</a>
-        <h2>Partidak (NKJ / JDN)</h2>
-        <p>Bikoteak, jardunaldiak eta partiden informazioa.</p>
+        
+        <h2>Partidak (NKJ / JDN) - Bikoteak</h2>
+        
+        <div class="info-card">
+            <p style="margin: 0;">Hemen duzue denboraldiko bikoteen banaketa kategoriaren arabera, baita partidei buruzko arau nagusiak ere.</p>
+        </div>
+
+        <h3 class="section-title">Denboraldiko Bikoteak / Parejas</h3>
+        
+        <div class="pairs-grid">
+            <div class="category-card">
+                <h4>Benjamin 3º</h4>
+                <ul>
+                    <li>U.Oteiza – I.Zubieta</li>
+                    <li>O.Mendioroz – T.Berruezo</li>
+                </ul>
+            </div>
+
+            <div class="category-card">
+                <h4>Benjamin 2º</h4>
+                <ul>
+                    <li>M.Dallo – M.Amorena</li>
+                </ul>
+            </div>
+
+            <div class="category-card">
+                <h4>Alevin 3º</h4>
+                <ul>
+                    <li>O.Pérez de Obanos – M.Pérez de Obanos</li>
+                </ul>
+            </div>
+
+            <div class="category-card">
+                <h4>Alevines 1º</h4>
+                <ul>
+                    <li>H.Astibia – A.Echeverria</li>
+                    <li>E.Petrox – E.Narvaez</li>
+                </ul>
+            </div>
+
+            <div class="category-card">
+                <h4>Infantil 4º</h4>
+                <ul>
+                    <li>A.Ripodas – E.San Martin</li>
+                </ul>
+            </div>
+
+            <div class="category-card">
+                <h4>Infantil 3º</h4>
+                <ul>
+                    <li>O.Atondo – A.Hazas</li>
+                    <li>I.Iltzarbe – U.Fillat</li>
+                </ul>
+            </div>
+
+            <div class="category-card">
+                <h4>Infantil 2º</h4>
+                <ul>
+                    <li>E.Astibia – I.Petrox</li>
+                    <li>J.Amorena – M.Casajus</li>
+                </ul>
+            </div>
+
+            <div class="category-card">
+                <h4>Infantil 1º</h4>
+                <ul>
+                    <li>P.Aginaga – X.Goldaracena</li>
+                </ul>
+            </div>
+        </div>
+
+        <h3 class="section-title">Araudia eta Antolaketa</h3>
+        <ul class="rules-list">
+            <li><strong>Bikoteen eraketa:</strong> Bikote guztiak monitoreek osatu dituzte kirol eta pedagogia irizpideak jarraituz.</li>
+            <li><strong>Hirukoteak:</strong> Hirukoteak osatzen diren kasuetan, partiden hurrenkera txapelketaren aurretik zozketatuko da.</li>
+            <li><strong>Familien adostasuna:</strong> Familiaren bat esleitutako bikotearekin ados ez badago, pilotariak ez du txapelketetan parte hartuko hurrengo denboraldira arte.</li>
+            <li><strong>Jardunaldien ordutegia:</strong> Partidak larunbat goizetan jokatuko dira.</li>
+            <li><strong>Ordutegi aldaketak:</strong> Partiden ordena astelehenean 20:00ak baino lehen eta ahal den neurrian abisatuz bakarrik aldatuko da.</li>
+            <li><strong>Ekipamendua:</strong> Partidetara txuriz joan behar da, taldeak emandako kamiseta eta txaketearekin, gerriko gorria/urdina, pilota berotzeko materiala eta federazioko txartela eramanda.</li>
+        </ul>
+
     </div>
 </body>
 </html>
