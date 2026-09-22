@@ -1,17 +1,17 @@
-name: Actualizar Partidos Martes (FNPV)
+name: Actualizar Partidos Miercoles (FNPV)
 
 on:
   schedule:
-    # Se ejecuta todos los martes a las 07:00 UTC (8:00/9:00 AM hora local)
-    - cron: '0 7 * * 3'
-  workflow_dispatch: # Permite ejecutar el proceso manualmente cuando quieras con un botón
+    # Se ejecuta automáticamente todos los miércoles a las 08:00 UTC
+    - cron: '0 8 * * 3'
+  workflow_dispatch: # Permite ejecución manual desde la pestaña Actions
 
 jobs:
-  update-matches:
+  actualizar:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Descargar repositorio
+      - name: Descargar el repositorio
         uses: actions/checkout@v3
 
       - name: Configurar Python
@@ -19,7 +19,7 @@ jobs:
         with:
           python-version: '3.x'
 
-      - name: Instalar librerías necesarias
+      - name: Instalar dependencias
         run: |
           python -m pip install --upgrade pip
           pip install requests beautifulsoup4
@@ -27,9 +27,10 @@ jobs:
       - name: Ejecutar script de actualización
         run: python actualizar_partidos.py
 
-      - name: Guardar y publicar cambios si hay nuevos partidos
+      - name: Guardar y subir cambios al repositorio
         run: |
-          git config --global user.name "Bot Abaxitabidea"
-          git config --global user.email "bot@abaxitabidea.com"
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
           git add partidak.html
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Eguneratze automatikoa: Asteko partidak (FNPV)" && git push)
+          git commit -m "Auto-actualización de partidos FNPV" || exit 0
+          git push
