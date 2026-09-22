@@ -2,35 +2,36 @@ name: Actualizar Partidos Miercoles (FNPV)
 
 on:
   schedule:
-    # Se ejecuta automáticamente todos los miércoles a las 08:00 UTC
-    - cron: '0 8 * * 3'
-  workflow_dispatch: # Permite ejecución manual desde la pestaña Actions
+    - cron: '0 8 * * 3' # Todos los miércoles a las 08:00 UTC
+  workflow_dispatch:
 
 jobs:
   actualizar:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Descargar el repositorio
+      - name: Descargar repositorio
         uses: actions/checkout@v3
 
       - name: Configurar Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.x'
+          python-version: '3.10'
 
-      - name: Instalar dependencias
+      - name: Instalar dependencias y Navegador
         run: |
           python -m pip install --upgrade pip
-          pip install requests beautifulsoup4
+          pip install requests beautifulsoup4 playwright
+          playwright install chromium
+          playwright install-deps
 
-      - name: Ejecutar script de actualización
+      - name: Ejecutar script de automatización
         run: python actualizar_partidos.py
 
-      - name: Guardar y subir cambios al repositorio
+      - name: Guardar y subir cambios
         run: |
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
           git add partidak.html
-          git commit -m "Auto-actualización de partidos FNPV" || exit 0
+          git commit -m "Auto-actualización de partidos FNPV con Playwright" || exit 0
           git push
