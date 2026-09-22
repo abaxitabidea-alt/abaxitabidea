@@ -10,9 +10,8 @@ URLS_COMPETICION = [
 CLUB_BUSQUEDA = "ABAXITABIDEA"
 
 def normalizar(texto):
-    """Limpia caracteres, convierte a minúsculas y sustituye variaciones comunes."""
+    """Convierte a minúsculas y elimina acentos/caracteres especiales."""
     texto = texto.lower()
-    # Convierte 'petrotx' a 'petrox' y elimina tildes/espacios extra
     texto = texto.replace("petrotx", "petrox").replace("tx", "x")
     texto = texto.replace("–", "-").replace("—", "-")
     return re.sub(r'[^a-z0-9\s-]', '', texto).strip()
@@ -54,7 +53,6 @@ def extraer_partidos_fnpv():
                                         equipo_nuestro = visitante
                                         rival = local
                                     
-                                    # Guardar en lista ordenada por jornada
                                     partidos_encontrados.append({
                                         "equipo_raw": equipo_nuestro,
                                         "equipo_norm": normalizar(equipo_nuestro),
@@ -89,20 +87,19 @@ def actualizar_partidak_html(lista_partidos):
             texto_pareja_html = tds[0].get_text(strip=True)
             pareja_html_norm = normalizar(texto_pareja_html)
             
-            # Obtener los nombres principales del HTML (ej. 'narvaez', 'petrox')
-            nombres_html = [p.strip() for p in pareja_html_norm.split('-') if len(p.strip()) >= 3]
+            # Extraer las palabras de más de 3 letras del HTML
+            palabras_html = [p for p in re.split(r'[\s\-]+', pareja_html_norm) if len(p) >= 3 and p != "abaxitabidea"]
             
             for partido in lista_partidos:
-                # Comprobar si los nombres del HTML coinciden con el registro de la FNPV
-                coinciden = all(nombre in partido["equipo_norm"] for nombre in nombres_html) or \
-                            any(nombre in partido["equipo_norm"] for nombre in nombres_html if len(nombre) > 4)
+                # Comprobar si al menos una de las palabras del HTML está en el nombre del partido FNPV
+                coincidencia = any(palabra in partido["equipo_norm"] for palabra in palabras_html)
                 
-                if coinciden:
+                if coincidencia:
                     tds[1].string = partido["aurkaria"]
                     tds[2].string = partido["fronton"]
                     tds[3].string = partido["horario"]
                     actualizados += 1
-                    print(f"   [ÉXITO] Matcheado: {texto_pareja_html} -> {partido['aurkaria']} ({partido['horario']})")
+                    print(f"   [ÉXITO] Matcheado: '{texto_pareja_html}' -> {partido['aurkaria']} | {partido['horario']}")
                     break
 
     with open(file_path, "w", encoding="utf-8") as f:
