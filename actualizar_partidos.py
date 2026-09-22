@@ -9,15 +9,8 @@ URLS_COMPETICION = [
 
 CLUB_BUSQUEDA = "ABAXITABIDEA"
 
-def normalizar(texto):
-    """Limpia caracteres, convierte a minúsculas y sustituye variantes dialectales/tipográficas."""
-    texto = texto.lower()
-    texto = texto.replace("petrotx", "petrox").replace("tx", "x")
-    texto = texto.replace("–", "-").replace("—", "-")
-    return re.sub(r'[^a-z0-9\s-]', '', texto).strip()
-
 def extraer_partidos_fnpv():
-    partidos_encontrados = []
+    partidos_encontrados = {}
     
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
@@ -53,13 +46,16 @@ def extraer_partidos_fnpv():
                                         equipo_nuestro = visitante
                                         rival = local
                                     
-                                    partidos_encontrados.append({
-                                        "equipo_raw": equipo_nuestro,
-                                        "equipo_norm": normalizar(equipo_nuestro),
+                                    # Imprimimos en los logs exactamente la sintaxis de la FNPV
+                                    print(f"   [FNPV DETECTADO]: '{equipo_nuestro}' vs '{rival}'")
+                                    
+                                    # Guardamos usando la cadena exacta en minúsculas sin espacios extra
+                                    clave = " ".join(equipo_nuestro.lower().split())
+                                    partidos_encontrados[clave] = {
                                         "aurkaria": rival,
                                         "fronton": fronton,
                                         "horario": fecha_hora
-                                    })
+                                    }
                     except Exception:
                         continue
 
@@ -70,7 +66,7 @@ def extraer_partidos_fnpv():
         
     return partidos_encontrados
 
-def actualizar_partidak_html(lista_partidos):
+def actualizar_partidak_html(datos_partidos):
     file_path = "partidak.html"
     if not os.path.exists(file_path):
         print("Error: no existe partidak.html")
@@ -85,32 +81,15 @@ def actualizar_partidak_html(lista_partidos):
         tds = tr.find_all('td')
         if len(tds) >= 4:
             texto_pareja_html = tds[0].get_text(strip=True)
-            pareja_html_norm = normalizar(texto_pareja_html)
+            clave_html = " ".join(texto_pareja_html.lower().split())
             
-            # Obtener tokens significativos del HTML (ignora 'abaxitabidea' y palabras cortas)
-            palabras_html = [p for p in re.split(r'[\s\-]+', pareja_html_norm) if len(p) >= 3 and p != "abaxitabidea"]
-            
-            mejor_partido = None
-            mejor_puntuacion = 0
-            
-            for partido in lista_partidos:
-                puntuacion = 0
-                for palabra in palabras_html:
-                    if palabra in partido["equipo_norm"]:
-                        puntuacion += 1
-                
-                # Nos quedamos con el partido que acumule mayor cantidad de coincidencias
-                if puntuacion > mejor_puntuacion:
-                    mejor_puntuacion = puntuacion
-                    mejor_partido = partido
-
-            # Exigimos al menos 1 coincidencia fuerte para proceder al cambio
-            if mejor_partido and mejor_puntuacion >= 1:
-                tds[1].string = mejor_partido["aurkaria"]
-                tds[2].string = mejor_partido["fronton"]
-                tds[3].string = mejor_partido["horario"]
+            if clave_html in datos_partidos:
+                datos = datos_partidos[clave_html]
+                tds[1].string = datos["aurkaria"]
+                tds[2].string = datos["fronton"]
+                tds[3].string = datos["horario"]
                 actualizados += 1
-                print(f"   [MATCH OK - Score: {mejor_puntuacion}]: '{texto_pareja_html}' -> {mejor_partido['aurkaria']} | {mejor_partido['horario']}")
+                print(f"   [ÉXITO EXPANSIÓN]: '{texto_pareja_html}' actualizado correctamente.")
 
     with open(file_path, "w", encoding="utf-8") as f:
         f.write(str(soup))
