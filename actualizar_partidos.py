@@ -1,5 +1,6 @@
 import os
 import re
+from datetime import datetime
 from bs4 import BeautifulSoup
 from playwright.sync_api import sync_playwright
 
@@ -9,7 +10,18 @@ URLS_COMPETICION = [
 
 CLUB_BUSQUEDA = "ABAXITABIDEA"
 
+def parsear_fecha(texto_horario):
+    """Extrae la fecha en formato DD/MM/YYYY y devuelve un objeto datetime para comparar."""
+    match = re.search(r'(\d{1,2}/\d{1,2}/\d{4})', texto_horario)
+    if match:
+        try:
+            return datetime.strptime(match.group(1), "%d/%m/%Y")
+        except ValueError:
+            return None
+    return None
+
 def extraer_partidos_fnpv():
+    # Estructura: {"pareja_norm": [lista_de_partidos]}
     partidos_encontrados = {}
     
     with sync_playwright() as p:
@@ -46,14 +58,17 @@ def extraer_partidos_fnpv():
                                         equipo_nuestro = visitante
                                         rival = local
                                     
-                                    print(f"   [FNPV DETECTADO]: '{equipo_nuestro}' vs '{rival}'")
-                                    
                                     clave = " ".join(equipo_nuestro.lower().split())
-                                    partidos_encontrados[clave] = {
+                                    
+                                    if clave not in partidos_encontrados:
+                                        partidos_encontrados[clave] = []
+                                        
+                                    partidos_encontrados[clave].append({
                                         "aurkaria": rival,
                                         "fronton": fronton,
-                                        "horario": fecha_hora
-                                    }
+                                        "horario": fecha_hora,
+                                        "dt": parsear_fecha(fecha_hora)
+                                    })
                     except Exception:
                         continue
 
@@ -62,7 +77,23 @@ def extraer_partidos_fnpv():
                 
         browser.close()
         
-    return partidos_encontrados
+    # Filtrar para seleccionar el partido MÁS PRÓXIMO (futuro o de hoy)
+    partidos_proximos = {}
+    hoy = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+
+    for pareja, lista in partidos_encontrados.items():
+        # Filtrar partidos que tengan fecha válida y sean hoy o en el futuro
+        futuros = [p for p in lista if p["dt"] and p["dt"] >= hoy]
+        
+        if futuros:
+            # Ordenar por fecha más cercana y coger el primero
+            futuros.sort(key=lambda x: x["dt"])
+            partidos_proximos[pareja] = futuros[0]
+        else:
+            # Si todos son pasados o no hay fecha clara, coger el último disponible
+            partidos_proximos[pareja] = lista[-1]
+
+    return partidos_proximos
 
 def actualizar_partidak_html(datos_partidos):
     file_path = "partidak.html"
@@ -94,7 +125,7 @@ def actualizar_partidak_html(datos_partidos):
                     del tds[1]['class']
                 
                 actualizados += 1
-                print(f"   [ÉXITO EXPANSIÓN]: '{texto_pareja_html}' actualizado correctamente.")
+                print(f"   [ÉXITO PRÓXIMA JORNADA]: '{texto_pareja_html}' -> {datos['aurkaria']} ({datos['horario']})")
 
     with open(file_path, "w", encoding="utf-8") as f:
         f.write(str(soup))
