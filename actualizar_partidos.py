@@ -46,10 +46,8 @@ def extraer_partidos_fnpv():
                                         equipo_nuestro = visitante
                                         rival = local
                                     
-                                    # Imprimimos en los logs exactamente la sintaxis de la FNPV
                                     print(f"   [FNPV DETECTADO]: '{equipo_nuestro}' vs '{rival}'")
                                     
-                                    # Guardamos usando la cadena exacta en minúsculas sin espacios extra
                                     clave = " ".join(equipo_nuestro.lower().split())
                                     partidos_encontrados[clave] = {
                                         "aurkaria": rival,
@@ -85,9 +83,16 @@ def actualizar_partidak_html(datos_partidos):
             
             if clave_html in datos_partidos:
                 datos = datos_partidos[clave_html]
+                
+                # Escribir rival, frontón y fecha
                 tds[1].string = datos["aurkaria"]
                 tds[2].string = datos["fronton"]
                 tds[3].string = datos["horario"]
+                
+                # Eliminar la clase CSS que ponía el texto en gris/cursiva
+                if 'class' in tds[1].attrs:
+                    del tds[1]['class']
+                
                 actualizados += 1
                 print(f"   [ÉXITO EXPANSIÓN]: '{texto_pareja_html}' actualizado correctamente.")
 
