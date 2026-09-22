@@ -10,7 +10,7 @@ URLS_COMPETICION = [
 CLUB_BUSQUEDA = "ABAXITABIDEA"
 
 def normalizar(texto):
-    """Convierte a minúsculas y elimina acentos/caracteres especiales."""
+    """Limpia caracteres, convierte a minúsculas y sustituye variantes dialectales/tipográficas."""
     texto = texto.lower()
     texto = texto.replace("petrotx", "petrox").replace("tx", "x")
     texto = texto.replace("–", "-").replace("—", "-")
@@ -87,20 +87,30 @@ def actualizar_partidak_html(lista_partidos):
             texto_pareja_html = tds[0].get_text(strip=True)
             pareja_html_norm = normalizar(texto_pareja_html)
             
-            # Extraer las palabras de más de 3 letras del HTML
+            # Obtener tokens significativos del HTML (ignora 'abaxitabidea' y palabras cortas)
             palabras_html = [p for p in re.split(r'[\s\-]+', pareja_html_norm) if len(p) >= 3 and p != "abaxitabidea"]
             
+            mejor_partido = None
+            mejor_puntuacion = 0
+            
             for partido in lista_partidos:
-                # Comprobar si al menos una de las palabras del HTML está en el nombre del partido FNPV
-                coincidencia = any(palabra in partido["equipo_norm"] for palabra in palabras_html)
+                puntuacion = 0
+                for palabra in palabras_html:
+                    if palabra in partido["equipo_norm"]:
+                        puntuacion += 1
                 
-                if coincidencia:
-                    tds[1].string = partido["aurkaria"]
-                    tds[2].string = partido["fronton"]
-                    tds[3].string = partido["horario"]
-                    actualizados += 1
-                    print(f"   [ÉXITO] Matcheado: '{texto_pareja_html}' -> {partido['aurkaria']} | {partido['horario']}")
-                    break
+                # Nos quedamos con el partido que acumule mayor cantidad de coincidencias
+                if puntuacion > mejor_puntuacion:
+                    mejor_puntuacion = puntuacion
+                    mejor_partido = partido
+
+            # Exigimos al menos 1 coincidencia fuerte para proceder al cambio
+            if mejor_partido and mejor_puntuacion >= 1:
+                tds[1].string = mejor_partido["aurkaria"]
+                tds[2].string = mejor_partido["fronton"]
+                tds[3].string = mejor_partido["horario"]
+                actualizados += 1
+                print(f"   [MATCH OK - Score: {mejor_puntuacion}]: '{texto_pareja_html}' -> {mejor_partido['aurkaria']} | {mejor_partido['horario']}")
 
     with open(file_path, "w", encoding="utf-8") as f:
         f.write(str(soup))
