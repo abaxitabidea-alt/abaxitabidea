@@ -15,20 +15,10 @@ URLS = [
 
 HTML_FILE = "partidak.html"
 
-def limpiar_texto(texto):
+def normalizar_texto(texto):
     if not texto:
         return ""
     return re.sub(r'\s+', ' ', texto).strip()
-
-def extraer_clave_pareja(texto):
-    """Extrae los nombres dentro de paréntesis para hacer un match flexible."""
-    match = re.search(r'\((.*?)\)', texto)
-    if match:
-        nombres = match.group(1).lower()
-        # Ordenamos los nombres de los pelotaris para dar igual el orden
-        partes = sorted([p.strip() for p in re.split(r'[-–/]', nombres)])
-        return "-".join(partes)
-    return limpiar_texto(texto).lower()
 
 def extraer_datos_fnpv():
     partidos_encontrados = {}
@@ -49,37 +39,38 @@ def extraer_datos_fnpv():
                     jornada_actual = None
 
                     for fila in filas:
-                        texto_fila = limpiar_texto(fila.text)
+                        texto_fila = normalizar_texto(fila.text)
                         
                         if "Jornada 1" in texto_fila:
                             jornada_actual = 1
                         elif "Jornada 2" in texto_fila and jornada_actual == 1:
                             break
 
-                        celdas = [limpiar_texto(c.text) for c in fila.find_all(["td", "th"])]
-                        
-                        if jornada_actual == 1 and len(celdas) >= 3:
-                            fecha_hora = celdas[0] if len(celdas) > 0 else "-"
-                            fronton = celdas[1] if len(celdas) > 1 else "-"
-                            local = celdas[2] if len(celdas) > 2 else ""
-                            visitante = celdas[-1] if len(celdas) >= 4 else ""
+                        celdas = fila.find_all(["td", "th"])
+                        if len(celdas) >= 4 and jornada_actual == 1:
+                            fecha_hora = normalizar_texto(celdas[0].text)
+                            fronton = normalizar_texto(celdas[1].text)
+                            local = normalizar_texto(celdas[2].text)
+                            visitante = normalizar_texto(celdas[4].text) if len(celdas) > 4 else normalizar_texto(celdas[3].text)
 
-                            # Extraer fecha
                             partes_fecha = fecha_hora.split()
-                            fecha = partes_fecha[0] if partes_fecha else "-"
+                            fecha = partes_fecha[0] if len(partes_fecha) > 0 else "-"
                             hora = partes_fecha[1] if len(partes_fecha) > 1 else "-"
 
-                            # Evaluar si juega ABAXITABIDEA
-                            for eq_guerra, eq_rival in [(local, visitante), (visitante, local)]:
-                                if "ABAXITABIDEA" in eq_guerra.upper():
-                                    clave = extraer_clave_pareja(eq_guerra)
-                                    partidos_encontrados[clave] = {
-                                        "nombre_original": eq_guerra,
-                                        "rival": eq_rival if eq_rival else "Descanso",
-                                        "fronton": fronton if fronton != "-" else "--",
-                                        "fecha": fecha,
-                                        "hora": hora
-                                    }
+                            if "ABAXITABIDEA" in local.upper():
+                                partidos_encontrados[local] = {
+                                    "rival": visitante,
+                                    "fronton": fronton if fronton and fronton != "-" else "-",
+                                    "fecha": fecha,
+                                    "hora": hora
+                                }
+                            elif "ABAXITABIDEA" in visitante.upper():
+                                partidos_encontrados[visitante] = {
+                                    "rival": local,
+                                    "fronton": fronton if fronton and fronton != "-" else "-",
+                                    "fecha": fecha,
+                                    "hora": hora
+                                }
 
             except Exception as e:
                 print(f"Error procesando {url}: {e}")
@@ -90,7 +81,7 @@ def extraer_datos_fnpv():
 
 def actualizar_partidak_html(partidos_fnpv):
     if not os.path.exists(HTML_FILE):
-        print(f"Error: No se encontró {HTML_FILE}")
+        print(f"Error: No se encontró el archivo {HTML_FILE}")
         return
 
     with open(HTML_FILE, "r", encoding="utf-8") as f:
@@ -98,30 +89,33 @@ def actualizar_partidak_html(partidos_fnpv):
 
     filas_actualizadas = 0
 
-    for tabla in soup.find_all("table"):
-        for fila in tabla.find_all("tr"):
+    tablas = soup.find_all("table")
+    for tabla in tablas:
+        filas = tabla.find_all("tr")
+        for fila in filas:
             celdas = fila.find_all("td")
             if len(celdas) >= 4:
-                pareja_html = limpiar_texto(celdas[0].text)
-                clave_html = extraer_clave_pareja(pareja_html)
+                pareja_nuestra = normalizar_texto(celdas[0].text)
 
-                if clave_html in partidos_fnpv:
-                    info = partidos_fnpv[clave_html]
+                if pareja_nuestra in partidos_fnpv:
+                    info = partidos_fnpv[pareja_nuestra]
                     rival = info["rival"]
 
-                    if rival.lower() in ["descanso", "atsegina", ""]:
+                    if rival.lower() in ["descanso", "atsegina"]:
                         celdas[1].string = "Descanso"
                         celdas[2].string = "--"
                         celdas[3].string = "--"
-                        print(f"[DESCANSO]: '{pareja_html}' -> Descanso")
+                        print(f"[DESCANSO DETECTADO]: '{pareja_nuestra}' -> Descanso")
                     else:
                         celdas[1].string = rival
                         celdas[2].string = info["fronton"]
+                        
                         if info["hora"] != "-":
                             celdas[3].string = f"{info['fecha']} - {info['hora']}"
                         else:
                             celdas[3].string = f"{info['fecha']} -"
-                        print(f"[ÉXITO]: '{pareja_html}' -> {rival} ({celdas[3].string})")
+                        
+                        print(f"[ÉXITO PRÓXIMA JORNADA]: '{pareja_nuestra}' -> {rival} ({celdas[3].string})")
 
                     filas_actualizadas += 1
 
