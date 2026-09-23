@@ -1,136 +1,146 @@
 import os
 import re
-from datetime import datetime
+import urllib.parse
 from bs4 import BeautifulSoup
 from playwright.sync_api import sync_playwright
 
-URLS_COMPETICION = [
-    "https://www.fnpelota.com/pub/ModalidadComp.asp?idioma=ca&idCompeticion=3235", # Alevines 1º
-    "https://www.fnpelota.com/pub/ModalidadComp.asp?idioma=ca&idCompeticion=3233", # Benjamin 3º
-    "https://www.fnpelota.com/pub/ModalidadComp.asp?idioma=ca&idCompeticion=3232", # Benjamin 2º
-    "https://www.fnpelota.com/pub/modalidadComp.asp?idioma=ca&idCompeticion=3237&temp=2026", # Alevin 3º
-    "https://www.fnpelota.com/pub/modalidadComp.asp?idioma=ca&idCompeticion=3240&temp=2026", # Infantil 2º
-    "https://www.fnpelota.com/pub/modalidadComp.asp?idioma=ca&idCompeticion=3241&temp=2026", # Infantil 3º
-    "https://www.fnpelota.com/pub/ModalidadComp.asp?idioma=ca&idCompeticion=3239&temp=2026"  # Infantil 1º
+# 1. Lista de URLs de la FNPV para scraping
+URLS = [
+    "https://www.fnpelota.com/pub/ModalidadComp.asp?idioma=ca&idCompeticion=3235",
+    "https://www.fnpelota.com/pub/ModalidadComp.asp?idioma=ca&idCompeticion=3233",
+    "https://www.fnpelota.com/pub/ModalidadComp.asp?idioma=ca&idCompeticion=3232",
+    "https://www.fnpelota.com/pub/ModalidadComp.asp?idioma=ca&idCompeticion=3237&temp=2026",
+    "https://www.fnpelota.com/pub/ModalidadComp.asp?idioma=ca&idCompeticion=3240&temp=2026",
+    "https://www.fnpelota.com/pub/ModalidadComp.asp?idioma=ca&idCompeticion=3241&temp=2026",
+    "https://www.fnpelota.com/pub/ModalidadComp.asp?idioma=ca&idCompeticion=3239&temp=2026"
 ]
 
-CLUB_BUSQUEDA = "ABAXITABIDEA"
+HTML_FILE = "partidak.html"
 
-def parsear_fecha(texto_horario):
-    """Extrae la fecha en formato DD/MM/YYYY y devuelve un objeto datetime para comparar."""
-    match = re.search(r'(\d{1,2}/\d{1,2}/\d{4})', texto_horario)
-    if match:
-        try:
-            return datetime.strptime(match.group(1), "%d/%m/%Y")
-        except ValueError:
-            return None
-    return None
+def normalizar_texto(texto):
+    """Limpia espacios en blanco extra para comparaciones exactas."""
+    if not texto:
+        return ""
+    return re.sub(r'\s+', ' ', texto).strip()
 
-def extraer_partidos_fnpv():
+def extraer_datos_fnpv():
+    """Obtiene los partidos/descansos de las URLs utilizando Playwright."""
     partidos_encontrados = {}
-    
+
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
         page = browser.new_page()
-        
-        for url in URLS_COMPETICION:
-            print(f"--> Conectando a FNPV: {url}")
+
+        for url in URLS:
             try:
+                print(f"--> Conectando a FNPV: {url}")
                 page.goto(url, wait_until="networkidle", timeout=30000)
-                page.wait_for_timeout(3000)
-                
-                marcos = [page] + page.frames
-                
-                for marco in marcos:
-                    try:
-                        filas = marco.query_selector_all("tr")
-                        for fila in filas:
-                            texto_fila = fila.inner_text().strip()
-                            
-                            if CLUB_BUSQUEDA in texto_fila.upper():
-                                celdas = [c.inner_text().strip() for c in fila.query_selector_all("td, th")]
-                                
-                                if len(celdas) >= 4:
-                                    fecha_hora = celdas[0] if celdas[0] else "--"
-                                    fronton = celdas[1] if celdas[1] else "--"
-                                    local = celdas[2] if len(celdas) > 2 else ""
-                                    visitante = celdas[4] if len(celdas) > 4 else (celdas[3] if len(celdas) > 3 else "")
-                                    
-                                    if CLUB_BUSQUEDA in local.upper():
-                                        equipo_nuestro = local
-                                        rival = visitante
-                                    else:
-                                        equipo_nuestro = visitante
-                                        rival = local
-                                    
-                                    clave = " ".join(equipo_nuestro.lower().split())
-                                    
-                                    if clave not in partidos_encontrados:
-                                        partidos_encontrados[clave] = []
-                                        
-                                    partidos_encontrados[clave].append({
-                                        "aurkaria": rival,
-                                        "fronton": fronton,
-                                        "horario": fecha_hora,
-                                        "dt": parsear_fecha(fecha_hora)
-                                    })
-                    except Exception:
-                        continue
+                content = page.content()
+                soup = BeautifulSoup(content, "html.parser")
+
+                # Buscamos la tabla de partidos
+                tablas = soup.find_all("table")
+                for tabla in tablas:
+                    filas = tabla.find_all("tr")
+                    jornada_actual = None
+
+                    for fila in filas:
+                        texto_fila = normalizar_texto(fila.text)
+                        
+                        # Detectar cabecera de Jornada (nos centramos en la Jornada 1 o la primera activa)
+                        if "Jornada 1" in texto_fila:
+                            jornada_actual = 1
+                        elif "Jornada 2" in texto_fila and jornada_actual == 1:
+                            # Terminamos de procesar al pasar a la siguiente jornada
+                            break
+
+                        celdas = fila.find_all(["td", "th"])
+                        if len(celdas) >= 4 and jornada_actual == 1:
+                            fecha_hora = normalizar_texto(celdas[0].text)
+                            fronton = normalizar_texto(celdas[1].text)
+                            local = normalizar_texto(celdas[2].text)
+                            visitante = normalizar_texto(celdas[4].text) if len(celdas) > 4 else normalizar_texto(celdas[3].text)
+
+                            # Separar fecha y hora
+                            partes_fecha = fecha_hora.split()
+                            fecha = partes_fecha[0] if len(partes_fecha) > 0 else "-"
+                            hora = partes_fecha[1] if len(partes_fecha) > 1 else "-"
+
+                            # Verificar si nuestra pareja juega de Local
+                            if "ABAXITABIDEA" in local.upper():
+                                partidos_encontrados[local] = {
+                                    "rival": visitante,
+                                    "fronton": fronton if fronton and fronton != "-" else "-",
+                                    "fecha": fecha,
+                                    "hora": hora
+                                }
+                            # Verificar si nuestra pareja juega de Visitante
+                            elif "ABAXITABIDEA" in visitante.upper():
+                                partidos_encontrados[visitante] = {
+                                    "rival": local,
+                                    "fronton": fronton if fronton and fronton != "-" else "-",
+                                    "fecha": fecha,
+                                    "hora": hora
+                                }
 
             except Exception as e:
-                print(f"Error cargando URL {url}: {e}")
-                
+                print(f"Error procesando {url}: {e}")
+
         browser.close()
-        
-    partidos_proximos = {}
-    hoy = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
 
-    for pareja, lista in partidos_encontrados.items():
-        futuros = [p for p in lista if p["dt"] and p["dt"] >= hoy]
-        
-        if futuros:
-            futuros.sort(key=lambda x: x["dt"])
-            partidos_proximos[pareja] = futuros[0]
-        else:
-            partidos_proximos[pareja] = lista[-1]
+    return partidos_encontrados
 
-    return partidos_proximos
-
-def actualizar_partidak_html(datos_partidos):
-    file_path = "partidak.html"
-    if not os.path.exists(file_path):
-        print("Error: no existe partidak.html")
+def actualizar_partidak_html(partidos_fnpv):
+    """Actualiza el archivo HTML local partidak.html."""
+    if not os.path.exists(HTML_FILE):
+        print(f"Error: No se encontró el archivo {HTML_FILE}")
         return
 
-    with open(file_path, "r", encoding="utf-8") as f:
-        soup = BeautifulSoup(f.read(), 'html.parser')
+    with open(HTML_FILE, "r", encoding="utf-8") as f:
+        soup = BeautifulSoup(f.read(), "html.parser")
 
-    actualizados = 0
+    filas_actualizadas = 0
 
-    for tr in soup.find_all('tr'):
-        tds = tr.find_all('td')
-        if len(tds) >= 4:
-            texto_pareja_html = tds[0].get_text(strip=True)
-            clave_html = " ".join(texto_pareja_html.lower().split())
-            
-            if clave_html in datos_partidos:
-                datos = datos_partidos[clave_html]
-                
-                tds[1].string = datos["aurkaria"]
-                tds[2].string = datos["fronton"]
-                tds[3].string = datos["horario"]
-                
-                if 'class' in tds[1].attrs:
-                    del tds[1]['class']
-                
-                actualizados += 1
-                print(f"   [ÉXITO PRÓXIMA JORNADA]: '{texto_pareja_html}' -> {datos['aurkaria']} ({datos['horario']})")
+    # Recorremos todas las tablas del HTML local
+    tablas = soup.find_all("table")
+    for tabla in tablas:
+        filas = tabla.find_all("tr")
+        for fila in filas:
+            celdas = fila.find_all("td")
+            if len(celdas) >= 4:
+                pareja_nuestra = normalizar_texto(celdas[0].text)
 
-    with open(file_path, "w", encoding="utf-8") as f:
+                # Si tenemos datos extraídos de la FNPV para esta pareja
+                if pareja_nuestra in partidos_fnpv:
+                    info = partidos_fnpv[pareja_nuestra]
+                    rival = info["rival"]
+
+                    # Comprobar si le toca descanso
+                    if rival.lower() in ["descanso", "atsegina"]:
+                        celdas[1].string = "Descanso"
+                        celdas[2].string = "--"
+                        celdas[3].string = "--"
+                        print(f"[DESCANSO DETECTADO]: '{pareja_nuestra}' -> Descanso")
+                    else:
+                        celdas[1].string = rival
+                        celdas[2].string = info["fronton"]
+                        
+                        # Formatear la fecha y hora
+                        if info["hora"] != "-":
+                            celdas[3].string = f"{info['fecha']} - {info['hora']}"
+                        else:
+                            celdas[3].string = f"{info['fecha']} -"
+                        
+                        print(f"[ÉXITO PRÓXIMA JORNADA]: '{pareja_nuestra}' -> {rival} ({celdas[3].string})")
+
+                    filas_actualizadas += 1
+
+    # Guardar los cambios en el archivo HTML
+    with open(HTML_FILE, "w", encoding="utf-8") as f:
         f.write(str(soup))
 
-    print(f"--> Proceso finalizado. Filas actualizadas en partidak.html: {actualizados}")
+    print(f"\n--> Proceso finalizado. Filas actualizadas en {HTML_FILE}: {filas_actualizadas}")
 
 if __name__ == "__main__":
-    partidos = extraer_partidos_fnpv()
-    actualizar_partidak_html(partidos)
+    datos = extraer_datos_fnpv()
+    actualizar_partidak_html(datos)
