@@ -10,7 +10,8 @@ URLS_COMPETICION = [
     "https://www.fnpelota.com/pub/ModalidadComp.asp?idioma=ca&idCompeticion=3232", # Benjamin 2º
     "https://www.fnpelota.com/pub/modalidadComp.asp?idioma=ca&idCompeticion=3237&temp=2026", # Alevin 3º
     "https://www.fnpelota.com/pub/modalidadComp.asp?idioma=ca&idCompeticion=3240&temp=2026", # Infantil 2º
-    "https://www.fnpelota.com/pub/modalidadComp.asp?idioma=ca&idCompeticion=3241&temp=2026"  # Infantil 3º
+    "https://www.fnpelota.com/pub/modalidadComp.asp?idioma=ca&idCompeticion=3241&temp=2026", # Infantil 3º
+    "https://www.fnpelota.com/pub/ModalidadComp.asp?idioma=ca&idCompeticion=3239&temp=2026"  # Infantil 1º
 ]
 
 CLUB_BUSQUEDA = "ABAXITABIDEA"
