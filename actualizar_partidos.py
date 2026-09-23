@@ -1,10 +1,8 @@
 import os
 import re
-import urllib.parse
 from bs4 import BeautifulSoup
 from playwright.sync_api import sync_playwright
 
-# 1. Lista de URLs de la FNPV para scraping
 URLS = [
     "https://www.fnpelota.com/pub/ModalidadComp.asp?idioma=ca&idCompeticion=3235",
     "https://www.fnpelota.com/pub/ModalidadComp.asp?idioma=ca&idCompeticion=3233",
@@ -17,14 +15,22 @@ URLS = [
 
 HTML_FILE = "partidak.html"
 
-def normalizar_texto(texto):
-    """Limpia espacios en blanco extra para comparaciones exactas."""
+def limpiar_texto(texto):
     if not texto:
         return ""
     return re.sub(r'\s+', ' ', texto).strip()
 
+def extraer_clave_pareja(texto):
+    """Extrae los nombres dentro de paréntesis para hacer un match flexible."""
+    match = re.search(r'\((.*?)\)', texto)
+    if match:
+        nombres = match.group(1).lower()
+        # Ordenamos los nombres de los pelotaris para dar igual el orden
+        partes = sorted([p.strip() for p in re.split(r'[-–/]', nombres)])
+        return "-".join(partes)
+    return limpiar_texto(texto).lower()
+
 def extraer_datos_fnpv():
-    """Obtiene los partidos/descansos de las URLs utilizando Playwright."""
     partidos_encontrados = {}
 
     with sync_playwright() as p:
@@ -35,53 +41,45 @@ def extraer_datos_fnpv():
             try:
                 print(f"--> Conectando a FNPV: {url}")
                 page.goto(url, wait_until="networkidle", timeout=30000)
-                content = page.content()
-                soup = BeautifulSoup(content, "html.parser")
+                soup = BeautifulSoup(page.content(), "html.parser")
 
-                # Buscamos la tabla de partidos
                 tablas = soup.find_all("table")
                 for tabla in tablas:
                     filas = tabla.find_all("tr")
                     jornada_actual = None
 
                     for fila in filas:
-                        texto_fila = normalizar_texto(fila.text)
+                        texto_fila = limpiar_texto(fila.text)
                         
-                        # Detectar cabecera de Jornada (nos centramos en la Jornada 1 o la primera activa)
                         if "Jornada 1" in texto_fila:
                             jornada_actual = 1
                         elif "Jornada 2" in texto_fila and jornada_actual == 1:
-                            # Terminamos de procesar al pasar a la siguiente jornada
                             break
 
-                        celdas = fila.find_all(["td", "th"])
-                        if len(celdas) >= 4 and jornada_actual == 1:
-                            fecha_hora = normalizar_texto(celdas[0].text)
-                            fronton = normalizar_texto(celdas[1].text)
-                            local = normalizar_texto(celdas[2].text)
-                            visitante = normalizar_texto(celdas[4].text) if len(celdas) > 4 else normalizar_texto(celdas[3].text)
+                        celdas = [limpiar_texto(c.text) for c in fila.find_all(["td", "th"])]
+                        
+                        if jornada_actual == 1 and len(celdas) >= 3:
+                            fecha_hora = celdas[0] if len(celdas) > 0 else "-"
+                            fronton = celdas[1] if len(celdas) > 1 else "-"
+                            local = celdas[2] if len(celdas) > 2 else ""
+                            visitante = celdas[-1] if len(celdas) >= 4 else ""
 
-                            # Separar fecha y hora
+                            # Extraer fecha
                             partes_fecha = fecha_hora.split()
-                            fecha = partes_fecha[0] if len(partes_fecha) > 0 else "-"
+                            fecha = partes_fecha[0] if partes_fecha else "-"
                             hora = partes_fecha[1] if len(partes_fecha) > 1 else "-"
 
-                            # Verificar si nuestra pareja juega de Local
-                            if "ABAXITABIDEA" in local.upper():
-                                partidos_encontrados[local] = {
-                                    "rival": visitante,
-                                    "fronton": fronton if fronton and fronton != "-" else "-",
-                                    "fecha": fecha,
-                                    "hora": hora
-                                }
-                            # Verificar si nuestra pareja juega de Visitante
-                            elif "ABAXITABIDEA" in visitante.upper():
-                                partidos_encontrados[visitante] = {
-                                    "rival": local,
-                                    "fronton": fronton if fronton and fronton != "-" else "-",
-                                    "fecha": fecha,
-                                    "hora": hora
-                                }
+                            # Evaluar si juega ABAXITABIDEA
+                            for eq_guerra, eq_rival in [(local, visitante), (visitante, local)]:
+                                if "ABAXITABIDEA" in eq_guerra.upper():
+                                    clave = extraer_clave_pareja(eq_guerra)
+                                    partidos_encontrados[clave] = {
+                                        "nombre_original": eq_guerra,
+                                        "rival": eq_rival if eq_rival else "Descanso",
+                                        "fronton": fronton if fronton != "-" else "--",
+                                        "fecha": fecha,
+                                        "hora": hora
+                                    }
 
             except Exception as e:
                 print(f"Error procesando {url}: {e}")
@@ -91,9 +89,8 @@ def extraer_datos_fnpv():
     return partidos_encontrados
 
 def actualizar_partidak_html(partidos_fnpv):
-    """Actualiza el archivo HTML local partidak.html."""
     if not os.path.exists(HTML_FILE):
-        print(f"Error: No se encontró el archivo {HTML_FILE}")
+        print(f"Error: No se encontró {HTML_FILE}")
         return
 
     with open(HTML_FILE, "r", encoding="utf-8") as f:
@@ -101,41 +98,33 @@ def actualizar_partidak_html(partidos_fnpv):
 
     filas_actualizadas = 0
 
-    # Recorremos todas las tablas del HTML local
-    tablas = soup.find_all("table")
-    for tabla in tablas:
-        filas = tabla.find_all("tr")
-        for fila in filas:
+    for tabla in soup.find_all("table"):
+        for fila in tabla.find_all("tr"):
             celdas = fila.find_all("td")
             if len(celdas) >= 4:
-                pareja_nuestra = normalizar_texto(celdas[0].text)
+                pareja_html = limpiar_texto(celdas[0].text)
+                clave_html = extraer_clave_pareja(pareja_html)
 
-                # Si tenemos datos extraídos de la FNPV para esta pareja
-                if pareja_nuestra in partidos_fnpv:
-                    info = partidos_fnpv[pareja_nuestra]
+                if clave_html in partidos_fnpv:
+                    info = partidos_fnpv[clave_html]
                     rival = info["rival"]
 
-                    # Comprobar si le toca descanso
-                    if rival.lower() in ["descanso", "atsegina"]:
+                    if rival.lower() in ["descanso", "atsegina", ""]:
                         celdas[1].string = "Descanso"
                         celdas[2].string = "--"
                         celdas[3].string = "--"
-                        print(f"[DESCANSO DETECTADO]: '{pareja_nuestra}' -> Descanso")
+                        print(f"[DESCANSO]: '{pareja_html}' -> Descanso")
                     else:
                         celdas[1].string = rival
                         celdas[2].string = info["fronton"]
-                        
-                        # Formatear la fecha y hora
                         if info["hora"] != "-":
                             celdas[3].string = f"{info['fecha']} - {info['hora']}"
                         else:
                             celdas[3].string = f"{info['fecha']} -"
-                        
-                        print(f"[ÉXITO PRÓXIMA JORNADA]: '{pareja_nuestra}' -> {rival} ({celdas[3].string})")
+                        print(f"[ÉXITO]: '{pareja_html}' -> {rival} ({celdas[3].string})")
 
                     filas_actualizadas += 1
 
-    # Guardar los cambios en el archivo HTML
     with open(HTML_FILE, "w", encoding="utf-8") as f:
         f.write(str(soup))
 
