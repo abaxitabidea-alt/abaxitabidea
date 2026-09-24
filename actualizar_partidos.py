@@ -1,125 +1,372 @@
-import os
-import re
-from datetime import datetime
-from bs4 import BeautifulSoup
-from playwright.sync_api import sync_playwright
+<!DOCTYPE html>
+<html lang="eu">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Partidak (NKJ / JDN) - Abaxitabidea</title>
+<style>
+        body { 
+            font-family: Arial, sans-serif; 
+            background-color: #f4f6f9; 
+            margin: 0; 
+            padding: 0; 
+            color: #333; 
+            line-height: 1.6;
+        }
+        header { 
+            background-color: #1b5e20; 
+            color: white; 
+            padding: 20px; 
+            text-align: center; 
+        }
+        .container { 
+            max-width: 950px; 
+            margin: 30px auto; 
+            background: white; 
+            padding: 30px; 
+            border-radius: 8px; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
+        }
+        .back-btn { 
+            display: inline-block; 
+            margin-bottom: 20px; 
+            color: #1b5e20; 
+            text-decoration: none; 
+            font-weight: bold; 
+        }
+        .back-btn:hover { 
+            text-decoration: underline; 
+        }
+        h1 { margin: 0; font-size: 24px; }
+        h2 { 
+            color: #1b5e20; 
+            border-bottom: 2px solid #1b5e20; 
+            padding-bottom: 5px; 
+            margin-top: 0;
+        }
+        .info-card {
+            background-color: #e8f5e9;
+            border-left: 4px solid #1b5e20;
+            padding: 15px 20px;
+            margin-bottom: 25px;
+            border-radius: 0 6px 6px 0;
+        }
+        .category-section {
+            margin-bottom: 30px;
+            background: #ffffff;
+            border: 1px solid #dcdcdc;
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .category-header {
+            background-color: #1b5e20;
+            color: white;
+            padding: 10px 15px;
+            font-size: 17px;
+            font-weight: bold;
+        }
+        .table-responsive {
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            text-align: center;
+        }
+        th, td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #eee;
+        }
+        th {
+            background-color: #f1f8f3;
+            color: #1b5e20;
+            font-size: 13px;
+            text-transform: uppercase;
+        }
+        .nuestro {
+            font-weight: bold;
+            color: #1b5e20;
+            background-color: #f4fbf5;
+        }
+        .descanso {
+            color: #888;
+            font-style: italic;
+            background-color: #fafafa;
+        }
+        ul.rules-list {
+            padding-left: 20px;
+            margin-bottom: 20px;
+        }
+        ul.rules-list li {
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+<header>
+<h1>Abaxitabidea Pilota Eskola</h1>
+</header>
+<div class="container">
+<a class="back-btn" href="index.html">← Hasierara bueltatu / Pagina principal</a>
+<h2>Partidak (NKJ / JDN) - Karteldegia</h2>
+<div class="info-card">
+<p style="margin: 0;">Hemen kontsultatu ditzakezu asteburuko partiden lehiaketak, tokia eta ordutegia:</p>
+</div>
 
-URL_CARTELERA = "https://www.fnpelota.com/pub/cartelera.asp?idioma=ca&selSemana=&selClub=&selCompeticion=&excel=0"
-CLUB_BUSQUEDA = "ABAXITABIDEA"
+<!-- BENJAMIN 3º -->
+<div class="category-section">
+<div class="category-header">Benjamin 3º</div>
+<div class="table-responsive">
+<table>
+<thead>
+<tr>
+<th>Data / Fecha</th>
+<th>Ordutegia / Hora</th>
+<th>Znbk / Nº Partida</th>
+<th>Tokia / Frontón</th>
+<th>Etxekoa / Local</th>
+<th>Kanpokoa / Visitante</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>--</td>
+<td>--</td>
+<td>--</td>
+<td>--</td>
+<td class="nuestro">ABAXITABIDEA (U. Oteiza - I. Zubieta)</td>
+<td class="descanso">Atsedena / Descanso</td>
+</tr>
+<tr>
+<td>--</td>
+<td>--</td>
+<td>--</td>
+<td>--</td>
+<td class="nuestro">ABAXITABIDEA (T. Berruezo - O. Mendioroz)</td>
+<td class="descanso">Atsedena / Descanso</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 
-def extraer_partidos_cartelera():
-    partidos_encontrados = {}
-    
-    with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
-        page = browser.new_page()
-        
-        print(f"--> Conectando a la cartelera general: {URL_CARTELERA}")
-        try:
-            page.goto(URL_CARTELERA, wait_until="networkidle", timeout=30000)
-            page.wait_for_timeout(2000)
-            
-            marcos = [page] + page.frames
-            for marco in marcos:
-                try:
-                    filas = marco.query_selector_all("tr")
-                    for fila in filas:
-                        texto_fila = fila.inner_text().strip()
-                        if CLUB_BUSQUEDA in texto_fila.upper():
-                            celdas = [c.inner_text().strip() for c in fila.query_selector_all("td, th")]
-                            
-                            # Estructura típica de cartelera:
-                            # [Fecha, Hora, Nº/Orden, Frontón, Local, Visitante, ...]
-                            if len(celdas) >= 6:
-                                fecha = celdas[0] if celdas[0] else "--"
-                                hora = celdas[1] if celdas[1] else "--"
-                                num_partida = celdas[2] if celdas[2] else "--"
-                                fronton = celdas[3] if celdas[3] else "--"
-                                equipo_local = celdas[4] if celdas[4] else "--"
-                                equipo_visitante = celdas[5] if celdas[5] else "--"
-                                
-                                # Determinamos cuál es nuestra pareja para usar como clave
-                                if CLUB_BUSQUEDA in equipo_local.upper():
-                                    clave = " ".join(equipo_local.lower().split())
-                                else:
-                                    clave = " ".join(equipo_visitante.lower().split())
-                                
-                                if clave not in partidos_encontrados:
-                                    partidos_encontrados[clave] = []
-                                    
-                                partidos_encontrados[clave].append({
-                                    "fecha": fecha,
-                                    "hora": hora,
-                                    "num_partida": num_partida,
-                                    "fronton": fronton,
-                                    "local": equipo_local,
-                                    "visitante": equipo_visitante
-                                })
-                except Exception:
-                    continue
-        except Exception as e:
-            print(f"Error cargando la cartelera: {e}")
-            
-        browser.close()
-        
-    return partidos_encontrados
+<!-- ALEVIN 3º -->
+<div class="category-section">
+<div class="category-header">Alevin 3º</div>
+<div class="table-responsive">
+<table>
+<thead>
+<tr>
+<th>Data / Fecha</th>
+<th>Ordutegia / Hora</th>
+<th>Znbk / Nº Partida</th>
+<th>Tokia / Frontón</th>
+<th>Etxekoa / Local</th>
+<th>Kanpokoa / Visitante</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>--</td>
+<td>--</td>
+<td>--</td>
+<td>--</td>
+<td class="nuestro">ABAXITABIDEA (M. Perez - O. Perez)</td>
+<td class="descanso">Atsedena / Descanso</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 
-def actualizar_partidak_html(datos_partidos):
-    file_path = "partidak.html"
-    if not os.path.exists(file_path):
-        print("Error: no existe partidak.html")
-        return
+<!-- ALEVINES 1º -->
+<div class="category-section">
+<div class="category-header">Alevines 1º</div>
+<div class="table-responsive">
+<table>
+<thead>
+<tr>
+<th>Data / Fecha</th>
+<th>Ordutegia / Hora</th>
+<th>Znbk / Nº Partida</th>
+<th>Tokia / Frontón</th>
+<th>Etxekoa / Local</th>
+<th>Kanpokoa / Visitante</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>--</td>
+<td>--</td>
+<td>--</td>
+<td>--</td>
+<td class="nuestro">ABAXITABIDEA (H. Astibia - A. Echeverria)</td>
+<td class="descanso">Atsedena / Descanso</td>
+</tr>
+<tr>
+<td>--</td>
+<td>--</td>
+<td>--</td>
+<td>--</td>
+<td class="nuestro">ABAXITABIDEA (E. Narvaez - E. Petrotx)</td>
+<td class="descanso">Atsedena / Descanso</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 
-    with open(file_path, "r", encoding="utf-8") as f:
-        soup = BeautifulSoup(f.read(), 'html.parser')
+<!-- INFANTIL 4º -->
+<div class="category-section">
+<div class="category-header">Infantil 4º</div>
+<div class="table-responsive">
+<table>
+<thead>
+<tr>
+<th>Data / Fecha</th>
+<th>Ordutegia / Hora</th>
+<th>Znbk / Nº Partida</th>
+<th>Tokia / Frontón</th>
+<th>Etxekoa / Local</th>
+<th>Kanpokoa / Visitante</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>--</td>
+<td>--</td>
+<td>--</td>
+<td>--</td>
+<td class="nuestro">ABAXITABIDEA (A. Ripodas - E. San Martin)</td>
+<td class="descanso">Atsedena / Descanso</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 
-    actualizados = 0
+<!-- INFANTIL 3º -->
+<div class="category-section">
+<div class="category-header">Infantil 3º</div>
+<div class="table-responsive">
+<table>
+<thead>
+<tr>
+<th>Data / Fecha</th>
+<th>Ordutegia / Hora</th>
+<th>Znbk / Nº Partida</th>
+<th>Tokia / Frontón</th>
+<th>Etxekoa / Local</th>
+<th>Kanpokoa / Visitante</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>--</td>
+<td>--</td>
+<td>--</td>
+<td>--</td>
+<td class="nuestro">ABAXITABIDEA (O. Atondo - A. Hazas)</td>
+<td class="descanso">Atsedena / Descanso</td>
+</tr>
+<tr>
+<td>--</td>
+<td>--</td>
+<td>--</td>
+<td>--</td>
+<td class="nuestro">ABAXITABIDEA (U. Fillat - I. Iltzarbe)</td>
+<td class="descanso">Atsedena / Descanso</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 
-    for tr in soup.find_all('tr'):
-        tds = tr.find_all('td')
-        # La tabla nueva tiene 6 columnas: Fecha, Hora, Nº, Frontón, Local, Visitante
-        if len(tds) == 6:
-            texto_local = tds[4].get_text(strip=True)
-            texto_visitante = tds[5].get_text(strip=True)
-            texto_referencia = texto_local + " " + texto_visitante
-            
-            clave_html = " ".join(texto_referencia.lower().split())
-            
-            coincidencia = None
-            if clave_html in datos_partidos:
-                coincidencia = datos_partidos[clave_html]
-            else:
-                for k, v in datos_partidos.items():
-                    # Coincidencia por apellidos contenidos en la celda
-                    apellidos = [palabra for palabra in clave_html.split() if len(palabra) > 3 and palabra not in ["abaxitabidea", "zehazteke"]]
-                    if apellidos and all(ap in k for ap in apellidos):
-                        coincidencia = v[0] if isinstance(v, list) else v
-                        break
+<!-- INFANTIL 2º -->
+<div class="category-section">
+<div class="category-header">Infantil 2º</div>
+<div class="table-responsive">
+<table>
+<thead>
+<tr>
+<th>Data / Fecha</th>
+<th>Ordutegia / Hora</th>
+<th>Znbk / Nº Partida</th>
+<th>Tokia / Frontón</th>
+<th>Etxekoa / Local</th>
+<th>Kanpokoa / Visitante</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>--</td>
+<td>--</td>
+<td>--</td>
+<td>--</td>
+<td class="nuestro">ABAXITABIDEA (E. Astibia - I. Petrotx)</td>
+<td class="descanso">Atsedena / Descanso</td>
+</tr>
+<tr>
+<td>--</td>
+<td>--</td>
+<td>--</td>
+<td>--</td>
+<td class="nuestro">ABAXITABIDEA (J. Amorena - M. Casajus)</td>
+<td class="descanso">Atsedena / Descanso</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 
-            if coincidencia:
-                tds[0].string = coincidencia["fecha"]
-                tds[1].string = coincidencia["hora"]
-                tds[2].string = coincidencia["num_partida"]
-                tds[3].string = coincidencia["fronton"]
-                tds[4].string = coincidencia["local"]
-                tds[5].string = coincidencia["visitante"]
-                
-                # Resaltar la posición de Abaxitabidea (negrita en su columna correspondiente)
-                if CLUB_BUSQUEDA in coincidencia["local"].upper():
-                    tds[4]['class'] = 'nuestro'
-                    if 'class' in tds[5].attrs: del tds[5]['class']
-                else:
-                    tds[5]['class'] = 'nuestro'
-                    if 'class' in tds[4].attrs: del tds[4]['class']
-                
-                actualizados += 1
-                print(f"   [ACTUALIZADO]: Partida #{coincidencia['num_partida']} | {coincidencia['local']} vs {coincidencia['visitante']}")
+<!-- INFANTIL 1º -->
+<div class="category-section">
+<div class="category-header">Infantil 1º</div>
+<div class="table-responsive">
+<table>
+<thead>
+<tr>
+<th>Data / Fecha</th>
+<th>Ordutegia / Hora</th>
+<th>Znbk / Nº Partida</th>
+<th>Tokia / Frontón</th>
+<th>Etxekoa / Local</th>
+<th>Kanpokoa / Visitante</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>--</td>
+<td>--</td>
+<td>--</td>
+<td>--</td>
+<td class="nuestro">ABAXITABIDEA (P. Aginaga - X. Goldaracena)</td>
+<td class="descanso">Atsedena / Descanso</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 
-    with open(file_path, "w", encoding="utf-8") as f:
-        f.write(str(soup))
-
-    print(f"\n--> Proceso finalizado. Filas actualizadas en partidak.html: {actualizados}")
-
-if __name__ == "__main__":
-    partidos = extraer_partidos_cartelera()
-    actualizar_partidak_html(partidos)
+<h3 style="color:#1b5e20; border-bottom: 2px solid #1b5e20; padding-bottom: 5px;">Araudia eta Antolaketa</h3>
+<ul class="rules-list">
+<li><strong>Bikoteak:</strong> Familiaren bat esleitutako bikotearekin ados ez badago, ez du txapelketetan parte hartuko hurrengo denboraldira arte.</li>
+<li><strong>Bikoteen eraketa:</strong> Bikote guztiak monitoreek osatu dituzte kirol eta pedagogia irizpideak jarraituz.</li>
+<li><strong>Hirukoteak:</strong> Hirukoteak badira, partiden hurrenkera txapelketaren aurretik zozketatuko da.</li>
+<li><strong>Jardunaldien ordutegia:</strong> Partidak larunbat goizetan jokatuko dira.</li>
+<li><strong>Ordutegi aldaketak:</strong> Partiden ordena astelehenean 20:00ak baino lehen eta ahal den neurrian abisatuz bakarrik aldatuko da.</li>
+<li><strong>Ekipamendua:</strong> Partidetara txuriz joan behar da, taldeak emandako kamiseta eta txaketearekin, gerriko gorria/urdina, pilota berotzeko materiala eta federazioko txartela eramanda.</li>
+<li><strong>------------------------------------:</strong></li>
+<li><strong>CASTELLANO.</strong></li>
+<li><strong>Partidos Campeonato:</strong> Los partidos se jugarán los sábados por la mañana.</li>
+<li><strong>Equipamiento:</strong> A los partidos hay que ir de blanco con la indumentaria del club, camiseta y jersey, gerriko rojo y azul, pelota para calentar y la tarjeta de federado.</li>
+<li><strong>Parejas campeonato:</strong> Las parejas las harán los monitores.</li>
+<li><strong>Trios campeonato:</strong> En el caso de que sean tríos, el orden de los partidos se sorteará antes del campeonato.</li>
+<li><strong>Parejas campeonato:</strong> Si alguna familia no está de acuerdo con la pareja asignada no participará en los campeonatos hasta la siguiente temporada.</li>
+<li><strong>Partidos:</strong> Solo se cambiará el orden de los partidos avisando antes del lunes a las 20:00 y en medida de lo posible.</li>
+</ul>
+</div>
+</body>
+</html>
