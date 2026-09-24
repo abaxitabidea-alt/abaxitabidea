@@ -4,7 +4,7 @@ from datetime import datetime
 from bs4 import BeautifulSoup
 from playwright.sync_api import sync_playwright
 
-# URLs de las competiciones en la FNPV
+# URLs de las competiciones en la FNPV (incluida la nueva de Infantil 4º: idCompeticion=3242)
 URLS_COMPETICION = [
     "https://www.fnpelota.com/pub/ModalidadComp.asp?idioma=ca&idCompeticion=3235",
     "https://www.fnpelota.com/pub/ModalidadComp.asp?idioma=ca&idCompeticion=3233",
@@ -12,7 +12,8 @@ URLS_COMPETICION = [
     "https://www.fnpelota.com/pub/ModalidadComp.asp?idioma=ca&idCompeticion=3237&temp=2026",
     "https://www.fnpelota.com/pub/ModalidadComp.asp?idioma=ca&idCompeticion=3240&temp=2026",
     "https://www.fnpelota.com/pub/ModalidadComp.asp?idioma=ca&idCompeticion=3241&temp=2026",
-    "https://www.fnpelota.com/pub/ModalidadComp.asp?idioma=ca&idCompeticion=3239&temp=2026"
+    "https://www.fnpelota.com/pub/ModalidadComp.asp?idioma=ca&idCompeticion=3239&temp=2026",
+    "https://www.fnpelota.com/pub/modalidadComp.asp?idioma=ca&idCompeticion=3242&temp=2026"
 ]
 
 CLUB_BUSQUEDA = "ABAXITABIDEA"
@@ -110,13 +111,11 @@ def actualizar_partidak_html(datos_partidos):
             texto_pareja_html = tds[0].get_text(strip=True)
             clave_html = " ".join(texto_pareja_html.lower().split())
             
-            # Buscar coincidencia exacta o por apellidos contenidos
             coincidencia = None
             if clave_html in datos_partidos:
                 coincidencia = datos_partidos[clave_html]
             else:
                 for k, v in datos_partidos.items():
-                    # Coincidencia si los apellidos principales coinciden
                     apellidos = [palabra for palabra in clave_html.split() if len(palabra) > 3 and palabra != "abaxitabidea"]
                     if apellidos and all(ap in k for ap in apellidos):
                         coincidencia = v
