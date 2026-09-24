@@ -4,95 +4,65 @@ from datetime import datetime
 from bs4 import BeautifulSoup
 from playwright.sync_api import sync_playwright
 
-# URLs de las competiciones en la FNPV (incluida la nueva de Infantil 4º: idCompeticion=3242)
-URLS_COMPETICION = [
-    "https://www.fnpelota.com/pub/ModalidadComp.asp?idioma=ca&idCompeticion=3235",
-    "https://www.fnpelota.com/pub/ModalidadComp.asp?idioma=ca&idCompeticion=3233",
-    "https://www.fnpelota.com/pub/ModalidadComp.asp?idioma=ca&idCompeticion=3232",
-    "https://www.fnpelota.com/pub/ModalidadComp.asp?idioma=ca&idCompeticion=3237&temp=2026",
-    "https://www.fnpelota.com/pub/ModalidadComp.asp?idioma=ca&idCompeticion=3240&temp=2026",
-    "https://www.fnpelota.com/pub/ModalidadComp.asp?idioma=ca&idCompeticion=3241&temp=2026",
-    "https://www.fnpelota.com/pub/ModalidadComp.asp?idioma=ca&idCompeticion=3239&temp=2026",
-    "https://www.fnpelota.com/pub/modalidadComp.asp?idioma=ca&idCompeticion=3242&temp=2026"
-]
-
+URL_CARTELERA = "https://www.fnpelota.com/pub/cartelera.asp?idioma=ca&selSemana=&selClub=&selCompeticion=&excel=0"
 CLUB_BUSQUEDA = "ABAXITABIDEA"
 
-def parsear_fecha(texto_horario):
-    """Extrae la fecha en formato DD/MM/YYYY."""
-    match = re.search(r'(\d{1,2}/\d{1,2}/\d{4})', texto_horario)
-    if match:
-        try:
-            return datetime.strptime(match.group(1), "%d/%m/%Y")
-        except ValueError:
-            return None
-    return None
-
-def extraer_partidos_fnpv():
+def extraer_partidos_cartelera():
     partidos_encontrados = {}
     
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
         page = browser.new_page()
         
-        for url in URLS_COMPETICION:
-            print(f"--> Conectando a FNPV: {url}")
-            try:
-                page.goto(url, wait_until="networkidle", timeout=30000)
-                page.wait_for_timeout(2000)
-                
-                marcos = [page] + page.frames
-                for marco in marcos:
-                    try:
-                        filas = marco.query_selector_all("tr")
-                        for fila in filas:
-                            texto_fila = fila.inner_text().strip()
-                            if CLUB_BUSQUEDA in texto_fila.upper():
-                                celdas = [c.inner_text().strip() for c in fila.query_selector_all("td, th")]
+        print(f"--> Conectando a la cartelera general: {URL_CARTELERA}")
+        try:
+            page.goto(URL_CARTELERA, wait_until="networkidle", timeout=30000)
+            page.wait_for_timeout(2000)
+            
+            marcos = [page] + page.frames
+            for marco in marcos:
+                try:
+                    filas = marco.query_selector_all("tr")
+                    for fila in filas:
+                        texto_fila = fila.inner_text().strip()
+                        if CLUB_BUSQUEDA in texto_fila.upper():
+                            celdas = [c.inner_text().strip() for c in fila.query_selector_all("td, th")]
+                            
+                            # Estructura típica de cartelera:
+                            # [Fecha, Hora, Nº/Orden, Frontón, Local, Visitante, ...]
+                            if len(celdas) >= 6:
+                                fecha = celdas[0] if celdas[0] else "--"
+                                hora = celdas[1] if celdas[1] else "--"
+                                num_partida = celdas[2] if celdas[2] else "--"
+                                fronton = celdas[3] if celdas[3] else "--"
+                                equipo_local = celdas[4] if celdas[4] else "--"
+                                equipo_visitante = celdas[5] if celdas[5] else "--"
                                 
-                                if len(celdas) >= 4:
-                                    fecha_hora = celdas[0] if celdas[0] else "--"
-                                    fronton = celdas[1] if celdas[1] else "--"
-                                    local = celdas[2] if len(celdas) > 2 else ""
-                                    visitante = celdas[4] if len(celdas) > 4 else (celdas[3] if len(celdas) > 3 else "")
+                                # Determinamos cuál es nuestra pareja para usar como clave
+                                if CLUB_BUSQUEDA in equipo_local.upper():
+                                    clave = " ".join(equipo_local.lower().split())
+                                else:
+                                    clave = " ".join(equipo_visitante.lower().split())
+                                
+                                if clave not in partidos_encontrados:
+                                    partidos_encontrados[clave] = []
                                     
-                                    if CLUB_BUSQUEDA in local.upper():
-                                        equipo_nuestro = local
-                                        rival = visitante
-                                    else:
-                                        equipo_nuestro = visitante
-                                        rival = local
-                                    
-                                    clave = " ".join(equipo_nuestro.lower().split())
-                                    
-                                    if clave not in partidos_encontrados:
-                                        partidos_encontrados[clave] = []
-                                        
-                                    partidos_encontrados[clave].append({
-                                        "aurkaria": rival if rival else "Descanso",
-                                        "fronton": fronton if fronton else "--",
-                                        "horario": fecha_hora,
-                                        "dt": parsear_fecha(fecha_hora)
-                                    })
-                    except Exception:
-                        continue
-            except Exception as e:
-                print(f"Error cargando URL {url}: {e}")
-                
+                                partidos_encontrados[clave].append({
+                                    "fecha": fecha,
+                                    "hora": hora,
+                                    "num_partida": num_partida,
+                                    "fronton": fronton,
+                                    "local": equipo_local,
+                                    "visitante": equipo_visitante
+                                })
+                except Exception:
+                    continue
+        except Exception as e:
+            print(f"Error cargando la cartelera: {e}")
+            
         browser.close()
         
-    partidos_proximos = {}
-    hoy = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-
-    for pareja, lista in partidos_encontrados.items():
-        futuros = [p for p in lista if p["dt"] and p["dt"] >= hoy]
-        if futuros:
-            futuros.sort(key=lambda x: x["dt"])
-            partidos_proximos[pareja] = futuros[0]
-        elif lista:
-            partidos_proximos[pareja] = lista[-1]
-
-    return partidos_proximos
+    return partidos_encontrados
 
 def actualizar_partidak_html(datos_partidos):
     file_path = "partidak.html"
@@ -107,30 +77,43 @@ def actualizar_partidak_html(datos_partidos):
 
     for tr in soup.find_all('tr'):
         tds = tr.find_all('td')
-        if len(tds) >= 4:
-            texto_pareja_html = tds[0].get_text(strip=True)
-            clave_html = " ".join(texto_pareja_html.lower().split())
+        # La tabla nueva tiene 6 columnas: Fecha, Hora, Nº, Frontón, Local, Visitante
+        if len(tds) == 6:
+            texto_local = tds[4].get_text(strip=True)
+            texto_visitante = tds[5].get_text(strip=True)
+            texto_referencia = texto_local + " " + texto_visitante
+            
+            clave_html = " ".join(texto_referencia.lower().split())
             
             coincidencia = None
             if clave_html in datos_partidos:
                 coincidencia = datos_partidos[clave_html]
             else:
                 for k, v in datos_partidos.items():
-                    apellidos = [palabra for palabra in clave_html.split() if len(palabra) > 3 and palabra != "abaxitabidea"]
+                    # Coincidencia por apellidos contenidos en la celda
+                    apellidos = [palabra for palabra in clave_html.split() if len(palabra) > 3 and palabra not in ["abaxitabidea", "zehazteke"]]
                     if apellidos and all(ap in k for ap in apellidos):
-                        coincidencia = v
+                        coincidencia = v[0] if isinstance(v, list) else v
                         break
 
             if coincidencia:
-                tds[1].string = coincidencia["aurkaria"]
-                tds[2].string = coincidencia["fronton"]
-                tds[3].string = coincidencia["horario"]
+                tds[0].string = coincidencia["fecha"]
+                tds[1].string = coincidencia["hora"]
+                tds[2].string = coincidencia["num_partida"]
+                tds[3].string = coincidencia["fronton"]
+                tds[4].string = coincidencia["local"]
+                tds[5].string = coincidencia["visitante"]
                 
-                if 'class' in tds[1].attrs:
-                    del tds[1]['class']
+                # Resaltar la posición de Abaxitabidea (negrita en su columna correspondiente)
+                if CLUB_BUSQUEDA in coincidencia["local"].upper():
+                    tds[4]['class'] = 'nuestro'
+                    if 'class' in tds[5].attrs: del tds[5]['class']
+                else:
+                    tds[5]['class'] = 'nuestro'
+                    if 'class' in tds[4].attrs: del tds[4]['class']
                 
                 actualizados += 1
-                print(f"   [ACTUALIZADO]: '{texto_pareja_html}' -> {coincidencia['aurkaria']} ({coincidencia['horario']})")
+                print(f"   [ACTUALIZADO]: Partida #{coincidencia['num_partida']} | {coincidencia['local']} vs {coincidencia['visitante']}")
 
     with open(file_path, "w", encoding="utf-8") as f:
         f.write(str(soup))
@@ -138,5 +121,5 @@ def actualizar_partidak_html(datos_partidos):
     print(f"\n--> Proceso finalizado. Filas actualizadas en partidak.html: {actualizados}")
 
 if __name__ == "__main__":
-    partidos = extraer_partidos_fnpv()
+    partidos = extraer_partidos_cartelera()
     actualizar_partidak_html(partidos)
