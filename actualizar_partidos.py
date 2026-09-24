@@ -4,9 +4,7 @@ import unicodedata
 from bs4 import BeautifulSoup
 from playwright.sync_api import sync_playwright
 
-# URL filtrando directamente por el club ABAXITABIDEA
-URL_CARTELERA = "https://www.fnpelota.com/pub/cartelera.asp?idioma=ca&selSemana=&selClub=ABAXITABIDEA&selCompeticion=&excel=0"
-CLUB_BUSQUEDA = "ABAXITABIDEA"
+URL_CARTELERA = "https://www.fnpelota.com/pub/cartelera.asp?idioma=ca"
 
 def normalizar_texto(texto):
     """Elimina tildes y convierte a mayúsculas para comparar fácilmente"""
@@ -26,37 +24,77 @@ def extraer_partidos_cartelera():
         print(f"--> Conectando a la cartelera: {URL_CARTELERA}")
         try:
             page.goto(URL_CARTELERA, wait_until="networkidle", timeout=30000)
-            page.wait_for_timeout(3000)
+            page.wait_for_timeout(2000)
             
-            # Buscar en el marco principal y sub-frames
-            marcos = [page] + page.frames
-            for marco in marcos:
-                try:
-                    filas = marco.query_selector_all("tr")
-                    for fila in filas:
-                        texto_fila = normalizar_texto(fila.inner_text())
-                        if CLUB_BUSQUEDA in texto_fila:
-                            celdas = [c.inner_text().strip() for c in fila.query_selector_all("td, th")]
-                            
-                            if len(celdas) >= 6:
-                                fecha = celdas[0] if celdas[0] else "--"
-                                hora = celdas[1] if celdas[1] else "--"
-                                num_partida = celdas[2] if celdas[2] else "--"
-                                fronton = celdas[3] if celdas[3] else "--"
-                                equipo_local = celdas[4] if celdas[4] else "--"
-                                equipo_visitante = celdas[5] if celdas[5] else "--"
-                                
-                                partidos_encontrados.append({
-                                    "fecha": fecha,
-                                    "hora": hora,
-                                    "num_partida": num_partida,
-                                    "fronton": fronton,
-                                    "local": equipo_local,
-                                    "visitante": equipo_visitante,
-                                    "texto_normalizado": normalizar_texto(f"{equipo_local} {equipo_visitante}")
-                                })
-                except Exception:
-                    continue
+            # 1. Seleccionar la SEMANA (28/09/2026 - 04/10/2026)
+            selects = page.query_selector_all("select")
+            for sel in selects:
+                options = sel.query_selector_all("option")
+                for opt in options:
+                    texto_opt = normalizar_texto(opt.inner_text())
+                    if "28/09" in texto_opt or "04/10" in texto_opt:
+                        sel.select_option(value=opt.get_attribute("value"))
+                        print(f"   [Filtro Semana]: {opt.inner_text().strip()}")
+                        break
+
+            # 2. Seleccionar COMPETICIÓN (JDN 36M MANO)
+            for sel in selects:
+                options = sel.query_selector_all("option")
+                for opt in options:
+                    texto_opt = normalizar_texto(opt.inner_text())
+                    if "JDN" in texto_opt and "36M" in texto_opt:
+                        sel.select_option(value=opt.get_attribute("value"))
+                        print(f"   [Filtro Competición]: {opt.inner_text().strip()}")
+                        break
+
+            # 3. Seleccionar CLUB (C.P. ABAXITABIDEA TALDE)
+            for sel in selects:
+                options = sel.query_selector_all("option")
+                for opt in options:
+                    texto_opt = normalizar_texto(opt.inner_text())
+                    if "ABAXITABIDEA" in texto_opt:
+                        sel.select_option(value=opt.get_attribute("value"))
+                        print(f"   [Filtro Club]: {opt.inner_text().strip()}")
+                        break
+
+            # 4. Hacer clic en BUSCAR
+            btn_buscar = page.query_selector("input[value*='BUSCAR'], input[type='submit'], button[type='submit']")
+            if btn_buscar:
+                btn_buscar.click()
+                print("--> Botón BUSCAR pulsado.")
+            else:
+                page.evaluate("document.forms[0] ? document.forms[0].submit() : null")
+                
+            page.wait_for_timeout(3000)
+
+            # Extraer las filas de la tabla cargada
+            filas = page.query_selector_all("tr")
+            for fila in filas:
+                texto_fila = normalizar_texto(fila.inner_text())
+                if "ABAXITABIDEA" in texto_fila:
+                    celdas = [c.inner_text().strip() for c in fila.query_selector_all("td, th")]
+                    
+                    # La tabla de la web tiene 7 columnas
+                    if len(celdas) >= 6:
+                        fecha = celdas[0] if celdas[0] else "--"
+                        hora = celdas[1] if celdas[1] else "--"
+                        num_partida = celdas[2] if celdas[2] else "--"
+                        fronton = celdas[3] if celdas[3] else "--"
+                        equipo_local = celdas[4] if celdas[4] else "--"
+                        equipo_visitante = celdas[5] if celdas[5] else "--"
+                        
+                        # Limpiar saltos de línea innecesarios en la hora
+                        hora = hora.replace('\n', ' ').strip()
+                        
+                        partidos_encontrados.append({
+                            "fecha": fecha,
+                            "hora": hora,
+                            "num_partida": num_partida,
+                            "fronton": fronton,
+                            "local": equipo_local,
+                            "visitante": equipo_visitante,
+                            "texto_normalizado": normalizar_texto(f"{equipo_local} {equipo_visitante}")
+                        })
         except Exception as e:
             print(f"Error cargando la cartelera: {e}")
             
@@ -83,14 +121,13 @@ def actualizar_partidak_html(partidos_web):
             texto_visitante = tds[5].get_text(strip=True)
             texto_fila_html = normalizar_texto(texto_local + " " + texto_visitante)
             
-            # Extraer apellidos clave de nuestra pareja en el HTML
+            # Extraer apellidos clave de nuestra pareja en la plantilla local HTML
             palabras_clave = [p for p in re.findall(r'\b[A-Z]{3,}\b', texto_fila_html) 
                               if p not in ["ABAXITABIDEA", "ATSEDENA", "DESCANSO", "ZEHAZTEKE"]]
             
             coincidencia = None
             if palabras_clave:
                 for partido in partidos_web:
-                    # Comprobamos si los apellidos de nuestra pareja están en el partido encontrado
                     if all(apellido in partido["texto_normalizado"] for apellido in palabras_clave):
                         coincidencia = partido
                         break
@@ -103,8 +140,7 @@ def actualizar_partidak_html(partidos_web):
                 tds[4].string = coincidencia["local"]
                 tds[5].string = coincidencia["visitante"]
                 
-                # Resaltar si somos Local o Visitante
-                if CLUB_BUSQUEDA in normalizar_texto(coincidencia["local"]):
+                if "ABAXITABIDEA" in normalizar_texto(coincidencia["local"]):
                     tds[4]['class'] = 'nuestro'
                     if 'class' in tds[5].attrs: del tds[5]['class']
                 else:
@@ -114,7 +150,6 @@ def actualizar_partidak_html(partidos_web):
                 actualizados += 1
                 print(f"   [ENCONTRADO]: {coincidencia['local']} vs {coincidencia['visitante']}")
             else:
-                # Si no aparece en la cartelera semanal, se asigna descanso
                 tds[0].string = "--"
                 tds[1].string = "--"
                 tds[2].string = "--"
