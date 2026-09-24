@@ -1,12 +1,23 @@
 import os
+import re
+import unicodedata
 from bs4 import BeautifulSoup
 from playwright.sync_api import sync_playwright
 
-URL_CARTELERA = "https://www.fnpelota.com/pub/cartelera.asp?idioma=ca&selSemana=&selClub=&selCompeticion=&excel=0"
+# URL filtrando directamente por el club ABAXITABIDEA
+URL_CARTELERA = "https://www.fnpelota.com/pub/cartelera.asp?idioma=ca&selSemana=&selClub=ABAXITABIDEA&selCompeticion=&excel=0"
 CLUB_BUSQUEDA = "ABAXITABIDEA"
 
+def normalizar_texto(texto):
+    """Elimina tildes y convierte a mayúsculas para comparar fácilmente"""
+    if not texto:
+        return ""
+    texto = unicodedata.normalize('NFD', texto)
+    texto = re.sub(r'[\u0300-\u036f]', '', texto)
+    return texto.upper().strip()
+
 def extraer_partidos_cartelera():
-    partidos_encontrados = {}
+    partidos_encontrados = []
     
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
@@ -15,15 +26,16 @@ def extraer_partidos_cartelera():
         print(f"--> Conectando a la cartelera: {URL_CARTELERA}")
         try:
             page.goto(URL_CARTELERA, wait_until="networkidle", timeout=30000)
-            page.wait_for_timeout(2000)
+            page.wait_for_timeout(3000)
             
+            # Buscar en el marco principal y sub-frames
             marcos = [page] + page.frames
             for marco in marcos:
                 try:
                     filas = marco.query_selector_all("tr")
                     for fila in filas:
-                        texto_fila = fila.inner_text().strip()
-                        if CLUB_BUSQUEDA in texto_fila.upper():
+                        texto_fila = normalizar_texto(fila.inner_text())
+                        if CLUB_BUSQUEDA in texto_fila:
                             celdas = [c.inner_text().strip() for c in fila.query_selector_all("td, th")]
                             
                             if len(celdas) >= 6:
@@ -34,19 +46,15 @@ def extraer_partidos_cartelera():
                                 equipo_local = celdas[4] if celdas[4] else "--"
                                 equipo_visitante = celdas[5] if celdas[5] else "--"
                                 
-                                # Guardar la partida para la pareja correspondiente
-                                datos_partido = {
+                                partidos_encontrados.append({
                                     "fecha": fecha,
                                     "hora": hora,
                                     "num_partida": num_partida,
                                     "fronton": fronton,
                                     "local": equipo_local,
-                                    "visitante": equipo_visitante
-                                }
-                                
-                                # Indexamos por los textos de ambos equipos
-                                clave = f"{equipo_local.lower()} {equipo_visitante.lower()}"
-                                partidos_encontrados[clave] = datos_partido
+                                    "visitante": equipo_visitante,
+                                    "texto_normalizado": normalizar_texto(f"{equipo_local} {equipo_visitante}")
+                                })
                 except Exception:
                     continue
         except Exception as e:
@@ -54,9 +62,10 @@ def extraer_partidos_cartelera():
             
         browser.close()
         
+    print(f"--> Partidos detectados en la web de la Federación: {len(partidos_encontrados)}")
     return partidos_encontrados
 
-def actualizar_partidak_html(datos_partidos):
+def actualizar_partidak_html(partidos_web):
     file_path = "partidak.html"
     if not os.path.exists(file_path):
         print("Error: no existe partidak.html")
@@ -69,19 +78,22 @@ def actualizar_partidak_html(datos_partidos):
 
     for tr in soup.find_all('tr'):
         tds = tr.find_all('td')
-        # Verificar que es una fila de tabla con 6 columnas
         if len(tds) == 6:
             texto_local = tds[4].get_text(strip=True)
             texto_visitante = tds[5].get_text(strip=True)
+            texto_fila_html = normalizar_texto(texto_local + " " + texto_visitante)
             
-            # Extraer apellidos principales de nuestra pareja en la celda HTML
-            apellidos = [p.lower() for p in (texto_local + " " + texto_visitante).split() if len(p) > 3 and p.lower() not in ["abaxitabidea", "atsedena", "descanso", "--"]]
+            # Extraer apellidos clave de nuestra pareja en el HTML
+            palabras_clave = [p for p in re.findall(r'\b[A-Z]{3,}\b', texto_fila_html) 
+                              if p not in ["ABAXITABIDEA", "ATSEDENA", "DESCANSO", "ZEHAZTEKE"]]
             
             coincidencia = None
-            for clave_partido, partido in datos_partidos.items():
-                if apellidos and all(ap in clave_partido for ap in apellidos):
-                    coincidencia = partido
-                    break
+            if palabras_clave:
+                for partido in partidos_web:
+                    # Comprobamos si los apellidos de nuestra pareja están en el partido encontrado
+                    if all(apellido in partido["texto_normalizado"] for apellido in palabras_clave):
+                        coincidencia = partido
+                        break
 
             if coincidencia:
                 tds[0].string = coincidencia["fecha"]
@@ -91,7 +103,8 @@ def actualizar_partidak_html(datos_partidos):
                 tds[4].string = coincidencia["local"]
                 tds[5].string = coincidencia["visitante"]
                 
-                if CLUB_BUSQUEDA in coincidencia["local"].upper():
+                # Resaltar si somos Local o Visitante
+                if CLUB_BUSQUEDA in normalizar_texto(coincidencia["local"]):
                     tds[4]['class'] = 'nuestro'
                     if 'class' in tds[5].attrs: del tds[5]['class']
                 else:
@@ -101,7 +114,7 @@ def actualizar_partidak_html(datos_partidos):
                 actualizados += 1
                 print(f"   [ENCONTRADO]: {coincidencia['local']} vs {coincidencia['visitante']}")
             else:
-                # Si no aparece en la cartelera de la semana, se marca descanso
+                # Si no aparece en la cartelera semanal, se asigna descanso
                 tds[0].string = "--"
                 tds[1].string = "--"
                 tds[2].string = "--"
@@ -112,7 +125,7 @@ def actualizar_partidak_html(datos_partidos):
     with open(file_path, "w", encoding="utf-8") as f:
         f.write(str(soup))
 
-    print(f"\n--> Proceso finalizado. Filas actualizadas: {actualizados}")
+    print(f"\n--> Proceso finalizado. Filas actualizadas en HTML: {actualizados}")
 
 if __name__ == "__main__":
     partidos = extraer_partidos_cartelera()
