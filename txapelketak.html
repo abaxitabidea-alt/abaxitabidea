@@ -61,32 +61,48 @@
             margin-bottom: 20px;
         }
         
+        /* Contenedor con desplazamiento vertical y cabecera fija */
         .table-responsive {
+            max-height: 65vh; /* Define la altura visible máxima de la tabla */
+            overflow-y: auto;  /* Permite el scroll vertical dentro del contenedor */
             overflow-x: auto;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
         }
+
         table {
             width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
+            border-collapse: separate; /* Necesario para que el borde se mantenga bien con sticky */
+            border-spacing: 0;
         }
+
         th, td {
             padding: 12px 15px;
             text-align: center;
             border-bottom: 1px solid #e0e0e0;
         }
+
+        /* Estilo para fijar la línea verde superior */
         th {
             background-color: #1b5e20;
             color: white;
             font-size: 14px;
             font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10; /* Asegura que quede siempre por encima de las filas */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
+
         th:first-child, td:first-child {
             text-align: left;
             font-weight: bold;
         }
+
+        tr:nth-child(even) { background-color: #f9f9f9; }
         tr:hover { background-color: #f1f8e9; }
         
-        /* Checkbox styling */
+        /* Estilo para los checkboxes */
         input[type="checkbox"] {
             width: 18px;
             height: 18px;
