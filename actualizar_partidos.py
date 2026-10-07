@@ -26,16 +26,15 @@ def extraer_partidos_cartelera():
             page.goto(URL_CARTELERA, wait_until="networkidle", timeout=30000)
             page.wait_for_timeout(2000)
             
-            # 1. Seleccionar la SEMANA (28/09/2026 - 04/10/2026)
+            # 1. Seleccionar la SEMANA actual dinámicamente
+            # La web de la Federación selecciona por defecto la semana en curso en el primer desplegable.
+            # No forzamos una fecha fija ("28/09"), dejamos que tome la jornada activa actual.
             selects = page.query_selector_all("select")
-            for sel in selects:
-                options = sel.query_selector_all("option")
-                for opt in options:
-                    texto_opt = normalizar_texto(opt.inner_text())
-                    if "28/09" in texto_opt or "04/10" in texto_opt:
-                        sel.select_option(value=opt.get_attribute("value"))
-                        print(f"   [Filtro Semana]: {opt.inner_text().strip()}")
-                        break
+            if selects:
+                # Confirmar qué semana está seleccionada por defecto
+                selected_opt = page.query_selector("select option[selected]")
+                if selected_opt:
+                    print(f"   [Filtro Semana Activa]: {selected_opt.inner_text().strip()}")
 
             # 2. Seleccionar COMPETICIÓN (JDN 36M MANO)
             for sel in selects:
@@ -74,7 +73,6 @@ def extraer_partidos_cartelera():
                 if "ABAXITABIDEA" in texto_fila:
                     celdas = [c.inner_text().strip() for c in fila.query_selector_all("td, th")]
                     
-                    # La tabla de la web tiene 7 columnas
                     if len(celdas) >= 6:
                         fecha = celdas[0] if celdas[0] else "--"
                         hora = celdas[1] if celdas[1] else "--"
@@ -83,7 +81,6 @@ def extraer_partidos_cartelera():
                         equipo_local = celdas[4] if celdas[4] else "--"
                         equipo_visitante = celdas[5] if celdas[5] else "--"
                         
-                        # Limpiar saltos de línea innecesarios en la hora
                         hora = hora.replace('\n', ' ').strip()
                         
                         partidos_encontrados.append({
@@ -121,7 +118,6 @@ def actualizar_partidak_html(partidos_web):
             texto_visitante = tds[5].get_text(strip=True)
             texto_fila_html = normalizar_texto(texto_local + " " + texto_visitante)
             
-            # Extraer apellidos clave de nuestra pareja en la plantilla local HTML
             palabras_clave = [p for p in re.findall(r'\b[A-Z]{3,}\b', texto_fila_html) 
                               if p not in ["ABAXITABIDEA", "ATSEDENA", "DESCANSO", "ZEHAZTEKE"]]
             
