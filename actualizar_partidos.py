@@ -7,6 +7,7 @@ from playwright.sync_api import sync_playwright
 URL_CARTELERA = "https://www.fnpelota.com/pub/cartelera.asp?idioma=ca"
 
 def normalizar_texto(texto):
+    """Elimina tildes y convierte a mayúsculas para comparar fácilmente"""
     if not texto:
         return ""
     texto = unicodedata.normalize('NFD', texto)
@@ -27,7 +28,7 @@ def extraer_partidos_cartelera():
             
             selects = page.query_selector_all("select")
 
-            # Seleccionar COMPETICIÓN (JDN 36M MANO)
+            # 1. Seleccionar COMPETICIÓN (JDN 36M MANO)
             for sel in selects:
                 options = sel.query_selector_all("option")
                 for opt in options:
@@ -36,7 +37,7 @@ def extraer_partidos_cartelera():
                         sel.select_option(value=opt.get_attribute("value"))
                         break
 
-            # Seleccionar CLUB (C.P. ABAXITABIDEA TALDE)
+            # 2. Seleccionar CLUB (C.P. ABAXITABIDEA TALDE)
             for sel in selects:
                 options = sel.query_selector_all("option")
                 for opt in options:
@@ -45,7 +46,7 @@ def extraer_partidos_cartelera():
                         sel.select_option(value=opt.get_attribute("value"))
                         break
 
-            # Hacer clic en BUSCAR
+            # 3. Hacer clic en BUSCAR
             btn_buscar = page.query_selector("input[value*='BUSCAR'], input[type='submit'], button[type='submit']")
             if btn_buscar:
                 btn_buscar.click()
@@ -87,7 +88,6 @@ def actualizar_partidak_html(partidos_web):
     with open(file_path, "r", encoding="utf-8") as f:
         soup = BeautifulSoup(f.read(), 'html.parser')
 
-    # Si hay partidos recuperados de la Federación, actualizamos secuencialmente las filas
     idx_partido = 0
     for tr in soup.find_all('tr'):
         tds = tr.find_all('td')
@@ -109,7 +109,6 @@ def actualizar_partidak_html(partidos_web):
                     if 'class' in tds[4].attrs: del tds[4]['class']
                 idx_partido += 1
             else:
-                # Si no hay más partidos cargados para esa casilla
                 tds[0].string = "--"
                 tds[1].string = "--"
                 tds[2].string = "--"
