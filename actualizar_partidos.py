@@ -26,12 +26,9 @@ def extraer_partidos_cartelera():
             page.goto(URL_CARTELERA, wait_until="networkidle", timeout=30000)
             page.wait_for_timeout(2000)
             
-            # 1. Seleccionar la SEMANA actual dinámicamente
-            # La web de la Federación selecciona por defecto la semana en curso en el primer desplegable.
-            # No forzamos una fecha fija ("28/09"), dejamos que tome la jornada activa actual.
+            # 1. Verificar la semana activa
             selects = page.query_selector_all("select")
             if selects:
-                # Confirmar qué semana está seleccionada por defecto
                 selected_opt = page.query_selector("select option[selected]")
                 if selected_opt:
                     print(f"   [Filtro Semana Activa]: {selected_opt.inner_text().strip()}")
@@ -68,30 +65,34 @@ def extraer_partidos_cartelera():
 
             # Extraer las filas de la tabla cargada
             filas = page.query_selector_all("tr")
+            categoria_actual = "General"
+
             for fila in filas:
+                # Detectar encabezados de categoría si los hay
                 texto_fila = normalizar_texto(fila.inner_text())
-                if "ABAXITABIDEA" in texto_fila:
-                    celdas = [c.inner_text().strip() for c in fila.query_selector_all("td, th")]
+                
+                # Extraer celdas
+                celdas = [c.inner_text().strip() for c in fila.query_selector_all("td, th")]
+                
+                if "ABAXITABIDEA" in texto_fila and len(celdas) >= 6:
+                    fecha = celdas[0] if celdas[0] else "--"
+                    hora = celdas[1] if celdas[1] else "--"
+                    num_partida = celdas[2] if celdas[2] else "--"
+                    fronton = celdas[3] if celdas[3] else "--"
+                    equipo_local = celdas[4] if celdas[4] else "--"
+                    equipo_visitante = celdas[5] if celdas[5] else "--"
                     
-                    if len(celdas) >= 6:
-                        fecha = celdas[0] if celdas[0] else "--"
-                        hora = celdas[1] if celdas[1] else "--"
-                        num_partida = celdas[2] if celdas[2] else "--"
-                        fronton = celdas[3] if celdas[3] else "--"
-                        equipo_local = celdas[4] if celdas[4] else "--"
-                        equipo_visitante = celdas[5] if celdas[5] else "--"
-                        
-                        hora = hora.replace('\n', ' ').strip()
-                        
-                        partidos_encontrados.append({
-                            "fecha": fecha,
-                            "hora": hora,
-                            "num_partida": num_partida,
-                            "fronton": fronton,
-                            "local": equipo_local,
-                            "visitante": equipo_visitante,
-                            "texto_normalizado": normalizar_texto(f"{equipo_local} {equipo_visitante}")
-                        })
+                    hora = hora.replace('\n', ' ').strip()
+                    
+                    partidos_encontrados.append({
+                        "fecha": fecha,
+                        "hora": hora,
+                        "num_partida": num_partida,
+                        "fronton": fronton,
+                        "local": equipo_local,
+                        "visitante": equipo_visitante,
+                        "texto_normalizado": normalizar_texto(f"{equipo_local} {equipo_visitante}")
+                    })
         except Exception as e:
             print(f"Error cargando la cartelera: {e}")
             
@@ -111,6 +112,7 @@ def actualizar_partidak_html(partidos_web):
 
     actualizados = 0
 
+    # Iterar por cada fila de las tablas existentes en el HTML
     for tr in soup.find_all('tr'):
         tds = tr.find_all('td')
         if len(tds) == 6:
@@ -118,13 +120,15 @@ def actualizar_partidak_html(partidos_web):
             texto_visitante = tds[5].get_text(strip=True)
             texto_fila_html = normalizar_texto(texto_local + " " + texto_visitante)
             
+            # Extraer apellidos o identificadores del equipo
             palabras_clave = [p for p in re.findall(r'\b[A-Z]{3,}\b', texto_fila_html) 
                               if p not in ["ABAXITABIDEA", "ATSEDENA", "DESCANSO", "ZEHAZTEKE"]]
             
             coincidencia = None
             if palabras_clave:
                 for partido in partidos_web:
-                    if all(apellido in partido["texto_normalizado"] for apellido in palabras_clave):
+                    # Coincidencia flexible por al menos 1 apellido o nombre de pareja
+                    if any(apellido in partido["texto_normalizado"] for apellido in palabras_clave):
                         coincidencia = partido
                         break
 
@@ -144,14 +148,16 @@ def actualizar_partidak_html(partidos_web):
                     if 'class' in tds[4].attrs: del tds[4]['class']
                 
                 actualizados += 1
-                print(f"   [ENCONTRADO]: {coincidencia['local']} vs {coincidencia['visitante']}")
+                print(f"   [ACTUALIZADO]: {coincidencia['local']} vs {coincidencia['visitante']}")
             else:
+                # Si esta semana no hay partido o están de descanso
                 tds[0].string = "--"
                 tds[1].string = "--"
                 tds[2].string = "--"
                 tds[3].string = "--"
-                tds[5].string = "Atsedena / Descanso"
-                tds[5]['class'] = 'descanso'
+                if "ATSEDENA" not in normalizar_texto(tds[5].string):
+                    tds[5].string = "Atsedena / Descanso"
+                    tds[5]['class'] = 'descanso'
 
     with open(file_path, "w", encoding="utf-8") as f:
         f.write(str(soup))
