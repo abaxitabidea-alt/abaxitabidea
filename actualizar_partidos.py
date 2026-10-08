@@ -7,7 +7,6 @@ from playwright.sync_api import sync_playwright
 URL_CARTELERA = "https://www.fnpelota.com/pub/cartelera.asp?idioma=ca"
 
 def normalizar_texto(texto):
-    """Elimina tildes y convierte a mayúsculas para comparar fácilmente"""
     if not texto:
         return ""
     texto = unicodedata.normalize('NFD', texto)
@@ -26,79 +25,57 @@ def extraer_partidos_cartelera():
             page.goto(URL_CARTELERA, wait_until="networkidle", timeout=30000)
             page.wait_for_timeout(2000)
             
-            # 1. Verificar la semana activa
             selects = page.query_selector_all("select")
-            if selects:
-                selected_opt = page.query_selector("select option[selected]")
-                if selected_opt:
-                    print(f"   [Filtro Semana Activa]: {selected_opt.inner_text().strip()}")
 
-            # 2. Seleccionar COMPETICIÓN (JDN 36M MANO)
+            # Seleccionar COMPETICIÓN (JDN 36M MANO)
             for sel in selects:
                 options = sel.query_selector_all("option")
                 for opt in options:
                     texto_opt = normalizar_texto(opt.inner_text())
                     if "JDN" in texto_opt and "36M" in texto_opt:
                         sel.select_option(value=opt.get_attribute("value"))
-                        print(f"   [Filtro Competición]: {opt.inner_text().strip()}")
                         break
 
-            # 3. Seleccionar CLUB (C.P. ABAXITABIDEA TALDE)
+            # Seleccionar CLUB (C.P. ABAXITABIDEA TALDE)
             for sel in selects:
                 options = sel.query_selector_all("option")
                 for opt in options:
                     texto_opt = normalizar_texto(opt.inner_text())
                     if "ABAXITABIDEA" in texto_opt:
                         sel.select_option(value=opt.get_attribute("value"))
-                        print(f"   [Filtro Club]: {opt.inner_text().strip()}")
                         break
 
-            # 4. Hacer clic en BUSCAR
+            # Hacer clic en BUSCAR
             btn_buscar = page.query_selector("input[value*='BUSCAR'], input[type='submit'], button[type='submit']")
             if btn_buscar:
                 btn_buscar.click()
-                print("--> Botón BUSCAR pulsado.")
             else:
                 page.evaluate("document.forms[0] ? document.forms[0].submit() : null")
                 
             page.wait_for_timeout(3000)
 
-            # Extraer las filas de la tabla cargada
+            # Extraer filas
             filas = page.query_selector_all("tr")
-            categoria_actual = "General"
 
             for fila in filas:
-                # Detectar encabezados de categoría si los hay
                 texto_fila = normalizar_texto(fila.inner_text())
-                
-                # Extraer celdas
                 celdas = [c.inner_text().strip() for c in fila.query_selector_all("td, th")]
                 
                 if "ABAXITABIDEA" in texto_fila and len(celdas) >= 6:
-                    fecha = celdas[0] if celdas[0] else "--"
-                    hora = celdas[1] if celdas[1] else "--"
-                    num_partida = celdas[2] if celdas[2] else "--"
-                    fronton = celdas[3] if celdas[3] else "--"
-                    equipo_local = celdas[4] if celdas[4] else "--"
-                    equipo_visitante = celdas[5] if celdas[5] else "--"
-                    
-                    hora = hora.replace('\n', ' ').strip()
-                    
                     partidos_encontrados.append({
-                        "fecha": fecha,
-                        "hora": hora,
-                        "num_partida": num_partida,
-                        "fronton": fronton,
-                        "local": equipo_local,
-                        "visitante": equipo_visitante,
-                        "texto_normalizado": normalizar_texto(f"{equipo_local} {equipo_visitante}")
+                        "fecha": celdas[0] if celdas[0] else "--",
+                        "hora": celdas[1].replace('\n', ' ').strip() if celdas[1] else "--",
+                        "num_partida": celdas[2] if celdas[2] else "--",
+                        "fronton": celdas[3] if celdas[3] else "--",
+                        "local": celdas[4] if celdas[4] else "--",
+                        "visitante": celdas[5] if celdas[5] else "--"
                     })
         except Exception as e:
             print(f"Error cargando la cartelera: {e}")
             
         browser.close()
         
-    print(f"--> Partidos detectados en la web de la Federación: {len(partidos_encontrados)}")
+    print(f"--> Partidos detectados: {len(partidos_encontrados)}")
     return partidos_encontrados
 
 def actualizar_partidak_html(partidos_web):
@@ -110,59 +87,40 @@ def actualizar_partidak_html(partidos_web):
     with open(file_path, "r", encoding="utf-8") as f:
         soup = BeautifulSoup(f.read(), 'html.parser')
 
-    actualizados = 0
-
-    # Iterar por cada fila de las tablas existentes en el HTML
+    # Si hay partidos recuperados de la Federación, actualizamos secuencialmente las filas
+    idx_partido = 0
     for tr in soup.find_all('tr'):
         tds = tr.find_all('td')
         if len(tds) == 6:
-            texto_local = tds[4].get_text(strip=True)
-            texto_visitante = tds[5].get_text(strip=True)
-            texto_fila_html = normalizar_texto(texto_local + " " + texto_visitante)
-            
-            # Extraer apellidos o identificadores del equipo
-            palabras_clave = [p for p in re.findall(r'\b[A-Z]{3,}\b', texto_fila_html) 
-                              if p not in ["ABAXITABIDEA", "ATSEDENA", "DESCANSO", "ZEHAZTEKE"]]
-            
-            coincidencia = None
-            if palabras_clave:
-                for partido in partidos_web:
-                    # Coincidencia flexible por al menos 1 apellido o nombre de pareja
-                    if any(apellido in partido["texto_normalizado"] for apellido in palabras_clave):
-                        coincidencia = partido
-                        break
+            if idx_partido < len(partidos_web):
+                partido = partidos_web[idx_partido]
+                tds[0].string = partido["fecha"]
+                tds[1].string = partido["hora"]
+                tds[2].string = partido["num_partida"]
+                tds[3].string = partido["fronton"]
+                tds[4].string = partido["local"]
+                tds[5].string = partido["visitante"]
 
-            if coincidencia:
-                tds[0].string = coincidencia["fecha"]
-                tds[1].string = coincidencia["hora"]
-                tds[2].string = coincidencia["num_partida"]
-                tds[3].string = coincidencia["fronton"]
-                tds[4].string = coincidencia["local"]
-                tds[5].string = coincidencia["visitante"]
-                
-                if "ABAXITABIDEA" in normalizar_texto(coincidencia["local"]):
+                if "ABAXITABIDEA" in normalizar_texto(partido["local"]):
                     tds[4]['class'] = 'nuestro'
                     if 'class' in tds[5].attrs: del tds[5]['class']
                 else:
                     tds[5]['class'] = 'nuestro'
                     if 'class' in tds[4].attrs: del tds[4]['class']
-                
-                actualizados += 1
-                print(f"   [ACTUALIZADO]: {coincidencia['local']} vs {coincidencia['visitante']}")
+                idx_partido += 1
             else:
-                # Si esta semana no hay partido o están de descanso
+                # Si no hay más partidos cargados para esa casilla
                 tds[0].string = "--"
                 tds[1].string = "--"
                 tds[2].string = "--"
                 tds[3].string = "--"
-                if "ATSEDENA" not in normalizar_texto(tds[5].string):
-                    tds[5].string = "Atsedena / Descanso"
-                    tds[5]['class'] = 'descanso'
+                tds[5].string = "Atsedena / Descanso"
+                tds[5]['class'] = 'descanso'
 
     with open(file_path, "w", encoding="utf-8") as f:
         f.write(str(soup))
 
-    print(f"\n--> Proceso finalizado. Filas actualizadas en HTML: {actualizados}")
+    print("--> `partidak.html` actualizado con éxito.")
 
 if __name__ == "__main__":
     partidos = extraer_partidos_cartelera()
