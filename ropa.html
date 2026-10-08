@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tallas Ropa - Abaxitabidea Pilota Eskola</title>
+    <title>Arropa Tamainak / Tallas Ropa - Abaxitabidea</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -20,12 +20,13 @@
             text-align: center;
         }
         .container {
-            max-width: 950px;
+            max-width: 1100px;
             margin: 30px auto;
             background: white;
             padding: 30px;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            overflow-x: auto;
         }
         .back-btn {
             display: inline-block;
@@ -55,16 +56,30 @@
             width: 100%;
             border-collapse: collapse;
             margin-top: 15px;
-            margin-bottom: 25px;
         }
         th, td {
-            padding: 10px;
-            border: 1px solid #ddd;
+            padding: 10px 8px;
+            border: 1px solid #ccc;
             text-align: center;
+            font-size: 14px;
         }
         th {
             background-color: #f1f8f3;
             color: #1b5e20;
+        }
+        .th-grupo {
+            background-color: #1b5e20;
+            color: white;
+            font-size: 15px;
+        }
+        .td-nombre {
+            text-align: left;
+            font-weight: bold;
+            background-color: #fafafa;
+            white-space: nowrap;
+        }
+        tr:nth-child(even) {
+            background-color: #fcfcfc;
         }
     </style>
 </head>
@@ -76,61 +91,67 @@
         <a href="index.html" class="back-btn">← Hasierara bueltatu / Pagina principal</a>
         <h2>Arropa Tamainak / Tallas Ropa</h2>
         <div class="info-card">
-            <p style="margin: 0;">Hemen kontsultatu ditzakezu kamiseta eta jaken neurriak / Consulta aquí las medidas de camisetas y chaquetas:</p>
+            <p style="margin: 0;">Hautatu edo kontsultatu pelotari bakoitzaren arropa tamaina / Consulta o selecciona la talla para cada pelotari:</p>
         </div>
 
-        <h3>Haurrak / Niños</h3>
         <table>
             <thead>
                 <tr>
-                    <th>Talla</th>
-                    <th>Adina / Edad</th>
-                    <th>Neurriak / Medidas</th>
+                    <th rowspan="2">PILOTARIA / PELOTARI</th>
+                    <th colspan="3" class="th-grupo">HAURRAK / NIÑOS</th>
+                    <th colspan="4" class="th-grupo">HELDUAK / ADULTOS</th>
+                </tr>
+                <tr>
+                    <th>6 - 8</th>
+                    <th>10 - 12</th>
+                    <th>14 - 16</th>
+                    <th>S</th>
+                    <th>M</th>
+                    <th>L</th>
+                    <th>XL</th>
                 </tr>
             </thead>
             <tbody>
+                <!-- Ejemplo de filas de Pelotaris (puedes añadir o modificar los nombres según la lista oficial) -->
                 <tr>
-                    <td>6 / 8</td>
-                    <td>6 - 8 urte</td>
-                    <td>Estándar infantil</td>
+                    <td class="td-nombre">Astibia, H.</td>
+                    <td><input type="radio" name="talla_astibia" value="6-8"></td>
+                    <td><input type="radio" name="talla_astibia" value="10-12"></td>
+                    <td><input type="radio" name="talla_astibia" value="14-16"></td>
+                    <td><input type="radio" name="talla_astibia" value="S"></td>
+                    <td><input type="radio" name="talla_astibia" value="M"></td>
+                    <td><input type="radio" name="talla_astibia" value="L"></td>
+                    <td><input type="radio" name="talla_astibia" value="XL"></td>
                 </tr>
                 <tr>
-                    <td>10 / 12</td>
-                    <td>10 - 12 urte</td>
-                    <td>Estándar infantil</td>
+                    <td class="td-nombre">Echeverria, A.</td>
+                    <td><input type="radio" name="talla_echeverria" value="6-8"></td>
+                    <td><input type="radio" name="talla_echeverria" value="10-12"></td>
+                    <td><input type="radio" name="talla_echeverria" value="14-16"></td>
+                    <td><input type="radio" name="talla_echeverria" value="S"></td>
+                    <td><input type="radio" name="talla_echeverria" value="M"></td>
+                    <td><input type="radio" name="talla_echeverria" value="L"></td>
+                    <td><input type="radio" name="talla_echeverria" value="XL"></td>
                 </tr>
                 <tr>
-                    <td>14 / 16</td>
-                    <td>14 - 16 urte</td>
-                    <td>Estándar infantil</td>
-                </tr>
-            </tbody>
-        </table>
-
-        <h3>Helduak / Adultos</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Talla</th>
-                    <th>Neurriak / Medidas</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>S</td>
-                    <td>Adulto S</td>
+                    <td class="td-nombre">Berruezo, T.</td>
+                    <td><input type="radio" name="talla_berruezo" value="6-8"></td>
+                    <td><input type="radio" name="talla_berruezo" value="10-12"></td>
+                    <td><input type="radio" name="talla_berruezo" value="14-16"></td>
+                    <td><input type="radio" name="talla_berruezo" value="S"></td>
+                    <td><input type="radio" name="talla_berruezo" value="M"></td>
+                    <td><input type="radio" name="talla_berruezo" value="L"></td>
+                    <td><input type="radio" name="talla_berruezo" value="XL"></td>
                 </tr>
                 <tr>
-                    <td>M</td>
-                    <td>Adulto M</td>
-                </tr>
-                <tr>
-                    <td>L</td>
-                    <td>Adulto L</td>
-                </tr>
-                <tr>
-                    <td>XL</td>
-                    <td>Adulto XL</td>
+                    <td class="td-nombre">Mendioroz, O.</td>
+                    <td><input type="radio" name="talla_mendioroz" value="6-8"></td>
+                    <td><input type="radio" name="talla_mendioroz" value="10-12"></td>
+                    <td><input type="radio" name="talla_mendioroz" value="14-16"></td>
+                    <td><input type="radio" name="talla_mendioroz" value="S"></td>
+                    <td><input type="radio" name="talla_mendioroz" value="M"></td>
+                    <td><input type="radio" name="talla_mendioroz" value="L"></td>
+                    <td><input type="radio" name="talla_mendioroz" value="XL"></td>
                 </tr>
             </tbody>
         </table>
