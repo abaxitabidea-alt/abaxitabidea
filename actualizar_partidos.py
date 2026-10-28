@@ -4,7 +4,8 @@ import unicodedata
 from bs4 import BeautifulSoup
 from playwright.sync_api import sync_playwright
 
-URL_CARTELERA = "https://www.fnpelota.com/pub/cartelera.asp?idioma=ca"
+# Se accede a la cartelera directa de la FNPV
+URL_CARTELERA = "https://www.fnpelota.com/pub/cartelera.asp?idioma=ca&selSemana=&selClub=&selCompeticion=&excel=0"
 
 def normalizar_texto(texto):
     if not texto:
@@ -25,32 +26,6 @@ def extraer_partidos_cartelera():
         try:
             page.goto(URL_CARTELERA, wait_until="networkidle", timeout=30000)
             page.wait_for_timeout(2000)
-            
-            selects = page.query_selector_all("select")
-
-            for sel in selects:
-                options = sel.query_selector_all("option")
-                for opt in options:
-                    texto_opt = normalizar_texto(opt.inner_text())
-                    if "JDN" in texto_opt and "36M" in texto_opt:
-                        sel.select_option(value=opt.get_attribute("value"))
-                        break
-
-            for sel in selects:
-                options = sel.query_selector_all("option")
-                for opt in options:
-                    texto_opt = normalizar_texto(opt.inner_text())
-                    if "ABAXITABIDEA" in texto_opt:
-                        sel.select_option(value=opt.get_attribute("value"))
-                        break
-
-            btn_buscar = page.query_selector("input[value*='BUSCAR'], input[type='submit'], button[type='submit']")
-            if btn_buscar:
-                btn_buscar.click()
-            else:
-                page.evaluate("document.forms[0] ? document.forms[0].submit() : null")
-                
-            page.wait_for_timeout(3000)
 
             filas = page.query_selector_all("tr")
 
@@ -58,6 +33,7 @@ def extraer_partidos_cartelera():
                 texto_fila = normalizar_texto(fila.inner_text())
                 celdas = [c.inner_text().strip() for c in fila.query_selector_all("td, th")]
                 
+                # Se obtienen las filas que incluyan el nombre del club
                 if "ABAXITABIDEA" in texto_fila and len(celdas) >= 6:
                     partido = {
                         "fecha": celdas[0] if celdas[0] else "--",
@@ -68,7 +44,7 @@ def extraer_partidos_cartelera():
                         "visitante": celdas[5] if celdas[5] else "--"
                     }
                     
-                    # Si se juega en Ororbia es de casa
+                    # Clasificación por frontón local (Ororbia)
                     if "ORORBIA" in normalizar_texto(partido["fronton"]):
                         partidos_casa.append(partido)
                     else:
@@ -79,7 +55,6 @@ def extraer_partidos_cartelera():
             
         browser.close()
 
-    # Ordenar partidos de casa por el número de partido
     def obtener_num(p):
         try:
             return int(p["num_partida"])
@@ -163,7 +138,7 @@ def actualizar_partidak_html(partidos_casa, partidos_fuera):
     with open(file_path, "w", encoding="utf-8") as f:
         f.write(str(soup))
 
-    print("--> `partidak.html` actualizado correctamente sin categorías y ordenado por casa/fuera.")
+    print("--> `partidak.html` actualizado correctamente.")
 
 if __name__ == "__main__":
     casa, fuera = extraer_partidos_cartelera()
